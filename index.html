@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Threads運用 統合ドキュメント｜@diet.bicho158</title>
+<style>
+:root{
+--bg:#0F0D0A;--panel:#161210;--soft:#1D1814;--ink:#F2EDE4;--muted:#BEB4A5;--faint:#8B8172;
+--line:#332B22;--line2:#443A2E;
+--accent:#E8730C;--accent-hi:#F59A45;--accent-soft:rgba(232,115,12,.13);--accent-line:#7A4413;
+--red:#FF7A6E;--red-soft:rgba(214,47,47,.14);--red-line:#6B2A24;
+--ok:#8FC7A8;--ok-soft:rgba(46,107,79,.22);
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;color:var(--ink);line-height:1.85;font-size:15.5px;
+font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;
+-webkit-font-smoothing:antialiased}
+.serif{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif}
+a{color:var(--accent-hi)}
+.layout{max-width:1140px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:212px minmax(0,1fr);gap:46px}
+.toc{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:42px 0;font-size:13px}
+.toc .t{font-size:11px;letter-spacing:.2em;color:var(--accent);font-weight:600;margin:0 0 12px}
+.toc a{display:block;padding:5px 0 5px 12px;color:var(--muted);text-decoration:none;border-left:2px solid var(--line)}
+.toc a:hover{color:var(--ink);border-left-color:var(--accent-line)}
+.toc a.on{color:var(--accent-hi);border-left-color:var(--accent);font-weight:600}
+main{padding:46px 0 120px;min-width:0}
+.eyebrow{font-size:11.5px;letter-spacing:.22em;color:var(--accent);font-weight:600;margin:0 0 8px}
+h1{font-size:31px;line-height:1.45;margin:0 0 12px;font-weight:600;text-wrap:balance}
+h2{font-size:22px;margin:70px 0 6px;font-weight:600;scroll-margin-top:24px;text-wrap:balance;color:var(--ink)}
+h2 .no{color:var(--accent);margin-right:10px}
+h3{font-size:16.5px;margin:34px 0 10px;font-weight:600}
+h4{font-size:14.5px;margin:22px 0 8px;font-weight:600}
+.lede{color:var(--muted);margin:0;max-width:42em}
+.meta{display:flex;gap:16px 22px;flex-wrap:wrap;margin:20px 0 0;font-size:13px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600}
+hr{border:none;border-top:1px solid var(--line);margin:24px 0 0}
+.note{color:var(--muted);font-size:13.5px;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(236px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:6px;padding:16px 18px;background:var(--panel)}
+.card.hot{border-color:var(--accent-line);background:var(--accent-soft)}
+.card.bad{border-color:var(--red-line);background:var(--red-soft)}
+.card h4{margin:0 0 7px;font-size:14px}
+.card p{margin:0;font-size:13px;color:var(--muted)}
+.card.hot p{color:#E8D5BE}
+.card.bad p{color:#E0BDB6}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin:18px 0 20px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.stat .l{font-size:11.5px;color:var(--faint);margin:0}
+.stat .v{font-size:21px;font-weight:600;margin:2px 0 0;font-variant-numeric:tabular-nums;line-height:1.4}
+.stat.acc{border-color:var(--accent-line)}
+.stat.acc .v{color:var(--accent-hi)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-weight:600;padding:8px 11px;border-bottom:2px solid var(--line2);white-space:nowrap;color:var(--ink)}
+td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--muted)}
+td b{color:var(--ink)}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.n.hi{color:var(--accent-hi);font-weight:600}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;
+background:var(--accent-soft);color:var(--accent-hi);white-space:nowrap}
+.badge.gray{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}
+.badge.red{background:var(--red-soft);color:var(--red)}
+.kws{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 0}
+.kw{font-size:12.5px;padding:2px 11px;border-radius:999px;background:var(--soft);border:1px solid var(--line);white-space:nowrap;color:var(--muted)}
+.kw.star{background:var(--accent);border-color:var(--accent);color:#22130A;font-weight:600}
+.kwbox{border:1px solid var(--line);border-radius:6px;padding:13px 16px;margin:0 0 10px;background:var(--panel)}
+.kwbox.hot{border-color:var(--accent-line);background:var(--accent-soft)}
+.kwh{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.kwh .t{font-weight:600;font-size:14px}
+.kwh .w{font-size:12px;color:var(--faint)}
+.post{border:1px solid var(--line);border-radius:6px;margin:0 0 12px;overflow:hidden;background:var(--panel)}
+.post-h{display:flex;align-items:center;gap:9px;padding:9px 15px;background:var(--soft);
+border-bottom:1px solid var(--line);font-size:12.5px;flex-wrap:wrap;color:var(--muted)}
+.post-h .n{font-family:"Hiragino Mincho ProN",serif;font-size:16px;color:var(--accent-hi);font-weight:600}
+.post-h .r{margin-left:auto;color:var(--faint);font-size:12px}
+.post-b{padding:13px 17px;white-space:pre-line;font-size:14px;line-height:1.95;color:var(--ink)}
+.post-b.sub{border-top:1px dashed var(--line);color:var(--muted)}
+.post-cap{padding:9px 15px;background:var(--soft);border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.quote{border-left:3px solid var(--accent);padding:12px 16px;background:var(--panel);margin:16px 0;font-size:13.5px;color:var(--muted);border-radius:0 6px 6px 0}
+.quote.warn{border-left-color:var(--red)}
+.quote b{font-weight:600;color:var(--ink)}
+pre{background:var(--panel);border:1px solid var(--line);padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.8;color:var(--ink)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+ol.rules{counter-reset:r;list-style:none;padding:0;margin:14px 0 0}
+ol.rules li{counter-increment:r;position:relative;padding:10px 0 10px 40px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
+ol.rules li b{color:var(--ink)}
+ol.rules li::before{content:counter(r);position:absolute;left:0;top:10px;width:24px;height:24px;border-radius:50%;
+background:var(--accent-soft);color:var(--accent-hi);font-size:12px;font-weight:600;
+display:flex;align-items:center;justify-content:center;font-family:"Hiragino Mincho ProN",serif}
+ul.plain{margin:10px 0 0;padding-left:1.3em;font-size:14px;color:var(--muted)}
+ul.plain li{margin:7px 0}
+ul.plain li::marker{color:var(--accent)}
+ul.plain b{color:var(--ink)}
+.axis{margin:18px 0 6px}
+.axis-lbl{text-align:center;font-size:11.5px;letter-spacing:.1em;color:var(--faint);padding:5px 0}
+.map{display:grid;grid-template-columns:22px 1fr 1fr}
+.side{writing-mode:vertical-rl;text-orientation:upright;font-size:10.5px;letter-spacing:.14em;
+color:var(--faint);display:flex;align-items:center;justify-content:center}
+.q{border:1px solid var(--line);padding:13px 15px;min-height:120px;background:var(--panel)}
+.q.hot{background:var(--accent-soft);border:2px solid var(--accent)}
+.q .ql{font-size:11px;color:var(--faint);margin:0 0 2px;letter-spacing:.06em}
+.q .qn{font-size:14px;font-weight:600;margin:0 0 8px}
+.q.hot .qn{color:var(--accent-hi)}
+.q .qd{font-size:12px;margin:6px 0 0;color:var(--muted)}
+.q.danger .qd{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--soft);
+border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.flow{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px;align-items:stretch}
+.flow .step{flex:1 1 150px;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:12px 14px;position:relative}
+.flow .step .fn{font-family:"Hiragino Mincho ProN",serif;color:var(--accent);font-weight:600;font-size:15px;margin:0 0 4px}
+.flow .step p{margin:0;font-size:12.5px;color:var(--muted)}
+.flow .step b{color:var(--ink);font-size:13px;display:block;margin-bottom:3px}
+.foot{font-size:12px;color:var(--faint);margin-top:60px;border-top:1px solid var(--line);padding-top:18px;line-height:1.9}
+@media(max-width:840px){
+.layout{grid-template-columns:1fr;gap:0}
+.toc{position:static;max-height:none;padding:22px 0 0;border-bottom:1px solid var(--line);margin-bottom:6px}
+.toc .list{display:flex;flex-wrap:wrap;gap:5px}
+.toc a{border-left:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12px}
+.toc a.on{border-color:var(--accent)}
+h1{font-size:24px}h2{font-size:19.5px}
+.map{grid-template-columns:16px 1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc">
+  <p class="t">目次</p>
+  <div class="list">
+    <a href="#now">0. 現在地サマリー</a>
+    <a href="#strategy">1. 戦略</a>
+    <a href="#market">2. 市場と競合</a>
+    <a href="#keywords">3. キーワード</a>
+    <a href="#types">4. 投稿の型</a>
+    <a href="#watch">5. 監視アカウント</a>
+    <a href="#profile">6. プロフィール設計</a>
+    <a href="#samples">7. サンプル投稿3本</a>
+    <a href="#system">8. 運用システム</a>
+  </div>
+</nav>
+
+<main>
+<div>
+  <p class="eyebrow">THREADS OPERATION DOSSIER ｜ 2026.08 版</p>
+  <h1 class="serif">Threads運用 統合ドキュメント<br>更年期×腸活ダイエット @diet.bicho158</h1>
+  <p class="lede">市場リサーチ・キーワード実測・投稿の型・監視アカウント・プロフィール設計・運用システムまで、この運用に関わる全リサーチを1ページに統合した。数字はすべて実測（収集時点の表示値）。判断に迷ったらここを引く。</p>
+  <div class="meta">
+    <span>アカウント <b>@diet.bicho158</b></span>
+    <span>ジャンル <b>更年期×腸活ダイエット</b></span>
+    <span>分析母数 <b>累計780件超（7月107件＋8月328件＋深い悩みKW353件）</b></span>
+    <span>顧客語彙 <b>120語超＋8月39語</b></span>
+  </div>
+  <hr>
+</div>
+
+<h2 class="serif" id="now"><span class="no">0</span>現在地サマリー</h2>
+<p class="note">2026-08-16 時点。</p>
+<div class="stats">
+  <div class="stat acc"><p class="l">アカウント</p><p class="v">@diet.bicho158</p></div>
+  <div class="stat"><p class="l">名前</p><p class="v" style="font-size:16px">おやせ｜更年期でも運動ゼロ-14kg</p></div>
+  <div class="stat"><p class="l">3語セット</p><p class="v" style="font-size:15px">更年期太り × 痩せない × コレステロール</p></div>
+  <div class="stat"><p class="l">状態</p><p class="v" style="font-size:16px;color:var(--red)">投稿一時停止中</p></div>
+</div>
+
+<div class="grid">
+  <div class="card"><h4>ペルソナ（確定・実話ベース）</h4><p>47歳2児ママ・158cm 73kg→59kg（-14kg／3ヶ月時点-12kg）。健康診断で再検査・脂肪肝E判定にビビった経験、ダイエット失敗歴20年、りんご酢原液で胃を壊した失敗談、同じやり方で友達4人成功。文面に使うのはこの実話のみ。</p></div>
+  <div class="card"><h4>体制</h4><p>1日20本の量産体制＋クラウド自動投稿＋チャット通知＋分析ダッシュボードを構築済み（→ 8章）。監視アカウント5件の巡回→実物トレース生成の工程に移行（→ 5章）。</p></div>
+  <div class="card hot"><h4>いま止まっている理由</h4><p>量産初期の生成投稿が「型をトレースできていない」とオーナー却下（品質事件）。予約分を全停止し、生成工程を全面改定。<b>新工程で作ったサンプル3本（→ 7章）のオーナー承認待ち。合格後に投稿再開。</b></p></div>
+</div>
+
+<h3>ここまでの経緯（要約）</h3>
+<div class="tw"><table>
+  <tr><th>時期</th><th>出来事</th></tr>
+  <tr><td>7/21</td><td>初投稿4本（旧アカウント名）。累計280ビュー・いいね0。受け皿（プロフィール・固定）未設置が課題と判明</td></tr>
+  <tr><td>8/7〜9</td><td>8月再調査（Threads57件＋X271件＋深い悩みKW353件）。戦略・キーワード・型を全面更新</td></tr>
+  <tr><td>8/8</td><td>オーナー決定: 3語セットルール・拡散語と刺す語の使い分け・1日20本体制</td></tr>
+  <tr><td>8/9</td><td>1号アカウント確定（@diet.bicho158・新ペルソナ）。自動投稿をクラウドへ移行</td></tr>
+  <tr><td>8/9〜10</td><td><b>品質事件</b>。生成投稿の型トレース不全で予約29本を保留。ツリー構造・現在形・有益ファーストの再定義（→ 4章）。参考元18本を全文＋ツリー＋コメント欄まで収集</td></tr>
+  <tr><td>8/10〜11</td><td>採用7型をオーナー確定。監視アカウント5件を選定。新工程でサンプル3本を作成 → <b>承認待ち（いまここ）</b></td></tr>
+</table></div>
+
+<h2 class="serif" id="strategy"><span class="no">1</span>戦略</h2>
+
+<h3>1アカウント＝3語セット</h3>
+<div class="quote">
+  <b>ルール（2026-08-08 オーナー決定）:</b> 1アカウントは「顧客の根っこが深い悩みの場面で、日常的に見ているキーワード3つ」でコンセプトを作る。1号アカウントは<b>「更年期太り × 痩せない × コレステロール（健診数値）」</b>。連続する投稿2本のうち少なくとも1本は、1行目にこの3語のいずれかを入れる。
+</div>
+<div class="tw"><table>
+  <tr><th>主軸</th><th>実測根拠（→ 3章）</th><th>役割</th></tr>
+  <tr><td><b>更年期太り</b></td><td>20件中18件が100いいね超・中央値1,296（実測最強）</td><td>第1主軸。40〜50代女性＝悩みが深く、高単価講座ターゲットと一致度最高。問いかけ型で低コストに回せる</td></tr>
+  <tr><td><b>痩せない</b></td><td>15/20が100超。二の腕・下半身・何しても、の複合語ハブ</td><td>「意志が弱いからじゃない、原因は肝臓/自律神経/ホルモン」の原因すり替えが教育導線に直結</td></tr>
+  <tr><td><b>コレステロール（健診数値）</b></td><td>13/20が100超・最大9,519。投稿の95%が2026年＝現役ジャンル</td><td>健康リスク訴求が講座の必要性を正当化。「更年期太りの中の健診回」として週1運用</td></tr>
+</table></div>
+
+<h3>拡散語と刺す語の使い分け</h3>
+<div class="quote">
+  <b>前提となる発見:</b> むくみ系投稿は安定して伸びるのに競合がいない。理由は「<b>高額を払って解決したい悩みではない</b>」から。伸びる語とお金を払う悩みの語は別物——この運用の目的は高単価講座に合うターゲットを集めることなので、両方を面で使い分ける。
+</div>
+<div class="grid">
+  <div class="card"><h4>投稿 ＝ 拡散語</h4><p>むくみ・黒豆茶・40キロ台・五苓散など、検索とレコメンドで伸びる語。広く届かせる入口。むくみ等での拡散狙いはOK。</p></div>
+  <div class="card hot"><h4>プロフィール ＝ 刺す語</h4><p>何をやっても痩せない／リバウンドの繰り返し／人生最高体重／更年期太り。投稿から来た読者のうち、アイデンティティレベルの痛みを持つ人に「私のことだ」と思わせて絞る。</p></div>
+</div>
+
+<h3>マルチアカウント構想</h3>
+<p class="note">20〜30アカウント展開を前提に、アカウントごとに別の3語セットを持たせる。1号（更年期太り×痩せない×コレステロール）で型と工程を確立し、当たった構造を別の3語セットへ横展開する。健診数値系（中性脂肪・血糖値・脂肪肝）は悩みが深く、次アカウント候補のクラスタ。</p>
+
+<h2 class="serif" id="market"><span class="no">2</span>市場と競合</h2>
+<p class="note">7月調査（競合107件実測）＋ 2026-08 再調査（Threads57件・X271件）にもとづく。</p>
+
+<h3>ポジション: 4象限の「④の席」を取る</h3>
+<div class="axis">
+  <div class="axis-lbl">▲ 専門家・肩書きで信頼させる</div>
+  <div class="map">
+    <div class="side">単一目的</div>
+    <div class="q"><p class="ql">第1象限</p><p class="qn">肩書き特化系</p>
+      <div class="chips"><span class="chip">トレーナー 2.8万</span><span class="chip">講座運営 1.3万</span><span class="chip">ジム・指導実績系</span></div>
+      <p class="qd">自店舗への送客が前提</p></div>
+    <div class="q"><p class="ql">第2象限</p><p class="qn">肩書き複合系</p>
+      <div class="chips"><span class="chip">エステ・整体</span><span class="chip">海外gut health勢</span></div>
+      <p class="qd">海外はチェックリスト型が主流</p></div>
+  </div>
+  <div class="map">
+    <div class="side">複合的な悩み</div>
+    <div class="q danger"><p class="ql">第3象限 ⚠ 最大の激戦区</p><p class="qn">当事者の体重記録系</p>
+      <div class="chips"><span class="chip">6.3万</span><span class="chip">5.5万</span><span class="chip">3.3万</span><span class="chip">2.9万</span><span class="chip">X最大 18.6万</span></div>
+      <p class="qd">「-◯kg」×「我慢しない」は同質化済み</p></div>
+    <div class="q hot"><p class="ql">第4象限 ◎ ここを取る</p><p class="qn">当事者×複合不調</p>
+      <div class="chips"><span class="chip">腸活×便秘中心の先行者 2.3万のみ</span></div>
+      <p class="qd">「複合不調の幅 × 30〜50代女性 × 紹介型導線」の3点セットは8月再調査後も0件</p></div>
+  </div>
+  <div class="axis-lbl">▼ 当事者の実体験で信頼させる</div>
+</div>
+
+<h3>2026-08 再調査の3つの発見</h3>
+<div class="grid">
+  <div class="card bad"><h4>①「腸活ダイエット」語は鮮度切れ</h4><p>同クエリの2026年投稿で100いいね超は<b>ゼロ</b>（最高82）。1,000いいね級は全て2024年投稿。読者は腸活を探していない。<b>腸活はフックではなく中身（手段）に置く。</b>主戦場は「更年期・むくみ・40代」の悩み語。</p></div>
+  <div class="card hot"><h4>② 伝聞権威型の台頭</h4><p>「肥満外来医に教わった」1,091 ／「東洋医学の先生（鍼灸歴30年）に教わった」2,928。<b>当事者のまま専門家の言葉を運ぶ話法</b>が複数アカウントで再現。紹介型導線と同構造＝むしろ追い風。</p></div>
+  <div class="card"><h4>③ 顔ぶれの総入れ替え</h4><p>7月の腸活・食べ痩せ大手は「更年期・むくみ・40代」クエリの伸び上位に<b>1件も不在</b>。腸活大手と、悩み語で伸びる層は別の生態系。</p></div>
+</div>
+
+<div class="quote">
+  <b>④の席は8月も空いたまま。</b>当事者×複合不調の単発体験談は6,728いいねまで伸びるのに、それを体系的に積み上げるアカウントが不在。入口キーワードは「腸活」ではなく<b>悩み語（更年期・むくみ・40代・便秘）</b>に修正して、この席を取りに行く。
+</div>
+
+<h3>8月の伸び投稿トップ10（2026年投稿・いいね100以上・暫定）</h3>
+<p class="note">投稿者フォロワー未測定のため、いいね数絶対値の暫定順位。</p>
+<div class="tw"><table>
+  <tr><th>いいね</th><th>クエリ</th><th>型と内容</th></tr>
+  <tr><td class="n hi">15,000</td><td>更年期</td><td>数字報告「ダイエット始めて約二年 ついに40キロ台乗った！！！！」</td></tr>
+  <tr><td class="n hi">6,728</td><td>むくみ</td><td>実験結果「自作の黒豆茶4ヶ月→脚のむくみ」</td></tr>
+  <tr><td class="n hi">5,369</td><td>更年期</td><td>質問・共感「更年期入って体重増えた人いる？」</td></tr>
+  <tr><td class="n">3,922</td><td>むくみ</td><td>Tips「朝の内臓戻し1分」</td></tr>
+  <tr><td class="n">3,721</td><td>むくみ</td><td>専門家断言「薬剤師×五苓散」</td></tr>
+  <tr><td class="n">3,285</td><td>40代</td><td>BA画像「39歳-10kg・後ろ姿比較（顔なしで成立）」</td></tr>
+  <tr><td class="n">2,420</td><td>40代</td><td>企画募集（※運用ルールで禁止型）</td></tr>
+  <tr><td class="n">2,144</td><td>更年期</td><td>継続報告「3年・165センチ65キロから53キロ」</td></tr>
+  <tr><td class="n">1,901</td><td>更年期</td><td>50代の共感導入（体重右肩上がり）</td></tr>
+  <tr><td class="n">1,091</td><td>更年期</td><td>伝聞権威「肥満外来医に教わった皮下脂肪型戦略」</td></tr>
+</table></div>
+
+<h4>X側（いいね率で判定）</h4>
+<ul class="plain">
+  <li><b>率1位 177.6%</b>（364いいね／フォロワー205）「サプリより医薬品の漢方。むくみ・便秘に10倍効く」— 小アカウントでもフォロワー外へ拡散した実例</li>
+  <li><b>率2位 30.7%</b>（3,205／10,445）「体重い人おやつはこれ食べて ←むくみ／便秘→」— 複合不調×固有名詞の食材指定</li>
+  <li>上位はいずれも<b>「むくみ 便秘」×固有名詞</b>。7月のX大手は直近1週間の率上位に不在。毎日の体重だけを書く日記型ログは3〜6いいねで全く伸びていない</li>
+</ul>
+
+<h2 class="serif" id="keywords"><span class="no">3</span>キーワード</h2>
+
+<h3>深い悩み10キーワードの実測判定（◎○×）</h3>
+<p class="note">深い悩み10KW＋ダイエット系12クエリ＝22クエリ・重複除去後353件を実測（2026-08-09）。いいね100超は353件中199件。投稿者フォロワー未測定のため、いいね率主基準は未適用の暫定判定。</p>
+<div class="tw"><table>
+  <tr><th>判定</th><th>キーワード</th><th>最大いいね</th><th>100超/件数</th><th>中央値</th><th>備考</th></tr>
+  <tr><td><span class="badge">◎</span></td><td><b>更年期 太り</b></td><td class="n hi">10,000</td><td class="n">18/20</td><td class="n">1,296</td><td>圧倒的。上位は「過去イチ太った人いる？」の素朴な問いかけ型</td></tr>
+  <tr><td><span class="badge">◎</span></td><td><b>痩せない</b></td><td class="n hi">10,000</td><td class="n">15/20</td><td class="n">235</td><td>複合語（二の腕・下半身・何しても）の起点になる万能語</td></tr>
+  <tr><td><span class="badge">◎</span></td><td><b>コレステロール</b></td><td class="n hi">9,519</td><td class="n">13/20</td><td class="n">163</td><td>逆張り解説＋数値改善報告。投稿の95%が2026年＝現役ジャンル</td></tr>
+  <tr><td><span class="badge gray">○</span></td><td>中性脂肪</td><td class="n">1,662</td><td class="n">8/20</td><td class="n">74</td><td>数値公開質問（TG710ってヤバい？）と脂肪肝解説</td></tr>
+  <tr><td><span class="badge gray">○</span></td><td>リバウンド</td><td class="n">1,579</td><td class="n">7/20</td><td class="n">20</td><td>失敗告白型・逆張り型</td></tr>
+  <tr><td><span class="badge gray">○</span></td><td>血糖値</td><td class="n">1,181</td><td class="n">9/20</td><td class="n">87</td><td>専門家Tips・リブレ実測・HbA1c質問型</td></tr>
+  <tr><td><span class="badge gray">○</span></td><td>何をやっても痩せない</td><td class="n">53,000</td><td class="n">9/20</td><td class="n">77</td><td>最大値は育児エッセイの外れ値。実質は原因解説型（多嚢胞/更年期）</td></tr>
+  <tr><td><span class="badge gray">○</span></td><td>健康診断</td><td class="n">30,000</td><td class="n">6/19</td><td class="n">27</td><td>最大値は文脈外バズ。日記語で悩み語ではない</td></tr>
+  <tr><td><span class="badge red">×</span></td><td>再検査</td><td class="n">18,000</td><td class="n">5/20</td><td class="n">31</td><td>伸びは医療不安の共感。講座の文脈と乖離＝ジャンル外</td></tr>
+  <tr><td><span class="badge red">×</span></td><td>人生最高体重</td><td class="n">—</td><td class="n">0</td><td class="n">—</td><td><b>検索結果が非表示（心身の健康の介入画面）＝検索ブロック</b></td></tr>
+</table></div>
+
+<h4>頻出ワードトップ10（100いいね超199件の出現投稿数）</h4>
+<div class="kws"><span class="kw star">ダイエット 56</span><span class="kw star">キロ 17</span><span class="kw">頑張 16</span><span class="kw">体重 14</span><span class="kw">運動 13</span><span class="kw star">コレステロール 12</span><span class="kw star">血糖値 12</span><span class="kw">産後 11</span><span class="kw star">先生 10</span><span class="kw star">更年期 9</span></div>
+<ul class="plain" style="margin-top:14px">
+  <li><b>「先生」10件・「肥満外来」6件</b> — 「◯◯の先生に聞いたら△△と言われた」が伸び投稿の定番構文（伝聞権威）</li>
+  <li><b>「脂肪肝」6件・「肝臓」4件</b> — 「痩せないのは意志のせいじゃない→臓器のせい」という自己否定の肯定に接続する2026年の勝ち筋</li>
+  <li><b>問いかけ型が最大火力</b> — 「〜な人いる？」で80,000 / 7,447 / 5,446 / 5,369。教えるより聞く</li>
+</ul>
+
+<div class="quote warn">
+  <b>検索ブロック語の注意:</b> 「人生最高体重」「下半身太り」「アラフィフ ダイエット」は検索すると介入画面が出て結果が表示されない。<b>検索流入の入口には使えないが、投稿本文内での使用は可</b>（5,369いいね投稿の本文中「人生最高体重を毎年更新中」等）。検索入口には「更年期」「痩せない」「ぽっこりお腹」を置く。
+</div>
+
+<h3>顧客語彙辞書ハイライト（8カテゴリ・120語超＋8月39語追加）</h3>
+<p class="note">すべて実際の伸び投稿から抜き出した実在の語彙。オレンジは優先度の高い語。</p>
+<div class="kwbox hot"><div class="kwh"><span class="badge">A</span><span class="t">体の感覚</span><span class="w">冒頭3行に置く</span></div>
+<div class="kws"><span class="kw star">お腹が張る</span><span class="kw star">パンパン</span><span class="kw star">疲れが抜けない</span><span class="kw star">夕方の足のむくみ</span><span class="kw">冷え</span><span class="kw">胃もたれ</span><span class="kw">下半身がパンパン</span></div></div>
+<div class="kwbox"><div class="kwh"><span class="badge gray">B</span><span class="t">数字と単位</span><span class="w">身長＋体重セットが最頻</span></div>
+<div class="kws"><span class="kw star">162cm 73kg（実数セット）</span><span class="kw star">40キロ台（15,000いいね）</span><span class="kw star">53キロから68キロ（from→to形式）</span><span class="kw">人生最高体重</span><span class="kw">標準体重</span><span class="kw">1200kcal</span></div></div>
+<div class="kwbox hot"><div class="kwh"><span class="badge">C</span><span class="t">服・鏡・他人の目</span><span class="w">体重より刺さる情景</span></div>
+<div class="kws"><span class="kw star">入らなくなったスカート</span><span class="kw star">臨月より重い</span><span class="kw star">後ろ姿の変化</span><span class="kw">着る服全てゆるゆる</span><span class="kw">健康診断</span><span class="kw">足首のくびれ爆誕</span></div></div>
+<div class="kwbox"><div class="kwh"><span class="badge gray">D</span><span class="t">食べ物・商品の固有名詞</span><span class="w">検索の入口。1投稿1つ必須</span></div>
+<div class="kws"><span class="kw star">黒豆茶（6,728）</span><span class="kw star">五苓散（3,721で再ヒット）</span><span class="kw star">もずく</span><span class="kw star">ゆで卵</span><span class="kw">りんご酢</span><span class="kw">カリウム</span><span class="kw">医薬品の漢方（X率177%）</span><span class="kw">サラダチキン＋ブロッコリー</span></div></div>
+<div class="kwbox"><div class="kwh"><span class="badge gray">E</span><span class="t">生活行動・シーン</span><span class="w">時間帯つきで具体化</span></div>
+<div class="kws"><span class="kw star">朝の内臓戻し1分</span><span class="kw star">夜になると甘いものがやめられない</span><span class="kw">早食いで流し込む</span><span class="kw">おやつを「むくみ用／便秘用」で選ぶ（X率30.7%）</span></div></div>
+<div class="kwbox hot"><div class="kwh"><span class="badge">F</span><span class="t">感情・自己否定</span><span class="w">締めの問いかけに使う</span></div>
+<div class="kws"><span class="kw star">意志が弱いんじゃない</span><span class="kw star">こんなにも痩せないんだ</span><span class="kw star">呼吸しても太る</span><span class="kw">誰か褒めて</span><span class="kw">教えてください</span><span class="kw">心が折れそう</span></div></div>
+<div class="kwbox hot"><div class="kwh"><span class="badge">G</span><span class="t">年代・ライフステージ</span><span class="w">最強のセグメント語。週2回明示</span></div>
+<div class="kws"><span class="kw star">更年期</span><span class="kw star">更年期太り</span><span class="kw star">40代</span><span class="kw star">45歳から・50歳で（実年齢「歳」明記型）</span><span class="kw">代謝が落ちる</span><span class="kw">アラフィフ</span></div></div>
+<div class="kwbox"><div class="kwh"><span class="badge gray">H</span><span class="t">体質・タイプ分類語</span><span class="badge">8月新設</span><span class="w">「私はこのタイプ」と自己判定させる語</span></div>
+<div class="kws"><span class="kw star">皮下脂肪型（1,091）</span><span class="kw star">水太り（1,117）</span><span class="kw">骨格ウェーブ</span><span class="kw">肥満外来医に教わった（権威の借り方の型）</span></div></div>
+
+<h2 class="serif" id="types"><span class="no">4</span>投稿の型</h2>
+<p class="note">参考元18本を「本文全文＋ツリー継続＋コメント欄上位」まで収集・分析して、オーナーが採用7型・不採用2型を確定（2026-08-10）。全投稿は、実際に当たった他者投稿（いいね100以上）を参考元に持ち、語句ではなく構造だけを借りる。</p>
+
+<h3>採用7型（各型の実例・全文引用）</h3>
+
+<div class="post">
+  <div class="post-h"><span class="n">壱</span><span><b>挙手アンケート型</b>（有益ファースト改造前提）</span><span class="r">実例 5,446いいね</span></div>
+  <div class="post-b">更年期世代で
+体重が過去最高になって焦ってる人いますかー？🙋🏻‍♀️</div>
+  <div class="post-cap">問いかけ1行で共感リプを大量に集め、ピン留め返信で軽い導線を置く構造。<b>ただし挙手だけの投稿は無名アカウントでは無効</b>のため、うちでは「挙手＋自己返信で原因と具体策を返す」有益ファースト改造をして使う（サンプル1参照）。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">弐</span><span><b>嘆き独り言型</b></span><span class="r">実例 932いいね</span></div>
+  <div class="post-b">40代、、、、こんなにも痩せないんだ😭
+163センチ57キロ、、、
+人生マックスで心が折れそう💔
+40代になってからお腹が張りやすくなったし。40代のダイエット難しい😭
+でもお酒はやめれないし、、、😭
+とりあえず明日も早起きしてたくさん歩こう、、、
+みんな、がんばろ？？？🤝</div>
+  <div class="post-cap">数字（163センチ57キロ）を晒して嘆く「、、、」の口語リズム。コメント欄で1件ずつ共感返しして会話数を伸ばすのがセット。当事者の生々しさの参照元として採用（うちのペルソナでは「痩せた人が過去を振り返る」のでなく現在形の悩み描写に置き換える）。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">参</span><span><b>数字爆発報告型</b></span><span class="r">実例 15,000いいね</span></div>
+  <div class="post-b">ダイエット始めて約二年
+ついに40キロ台乗った！！！！
+2年前は72.25kg
+今日は46.7kg！！！
+ひゃあーーー嬉しい！！！！
+マイナス26kgだ！！！</div>
+  <div class="post-cap">節目の達成を絶叫語尾で報告。from→to実数＋「！！！」の感情爆発が本ジャンル最大の反応を取る。継続の節目でのみ使う（開始直後の単発では再現しにくい）。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">四</span><span><b>褒めておねだり型</b></span><span class="r">実例 8,679いいね</span></div>
+  <div class="post-b">ダイエット始めて22kg減りました。
+通りすがりの方、
+一言だけ褒めていただけませんか？笑
+49歳、まだまだ頑張ります。</div>
+  <div class="post-cap">実績＋「褒めて」の照れ隠しで読者を「返事する側」に置く。実年齢「歳」明記とセットで強い。実績数字は本物のみ使用。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">五</span><span><b>生活実験・副産物型</b>（固有名詞×期間×体感変化）</span><span class="r">実例 6,727いいね</span></div>
+  <div class="post-b">ひょんなことから自分で黒豆茶を作って飲み始めてから4ヶ月ほどたちます。
+煮出した黒豆は柔らかくなって食べられるので、そのまま食べたりサラダに入れて食べています。
+最初は脚のむくみ解消のために飲み始めた黒豆茶。
+思いがけない副産物がありました。
+それは白髪が目立たなくなって来たことと髪の毛の感触が変わってきたこと。
+黒豆茶の効果に驚いてます😊</div>
+  <div class="post-cap">固有名詞（黒豆茶）×期間（4ヶ月）×狙っていなかった副産物。効果の断定予告をせず「私はこうだった」で書けるため薬機法的にも安全側。コメント欄では作り方の小出し回答で会話を継続。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">六</span><span><b>専門家又聞き型</b>（教わった話の橋渡し）</span><span class="r">実例 2,928いいね</span></div>
+  <div class="post-b">全アラフォー見てね🪷
+お待たせしました！
+東洋医学の先生(鍼灸歴30年)から教わった
+「寝てる間に勝手に若返る10の方法」お伝えします。
+知ってるか知らないかで見た目年齢10歳変わるよ。
+自律神経さえ整えば、女性の悩みの9割は片づきます。
+ほうれい線、シミ、たるみ、むくみ、白髪、抜け毛、痩せない体、疲れが取れない。これ全部、自律神経の乱れが原因。
+ここを整えた人は例外なく若返る。
+しかも全部「寝てる間に」勝手に。
+早速今日からできることは、</div>
+  <div class="post-cap">肩書きなしで「◯◯の先生に教わった私」の立ち位置から権威を借りる。同型で「肥満外来医に教わった皮下脂肪型戦略」1,091も再現。紹介型導線と同構造で導線整合が最良。<b>実際に教わった内容に限る（架空の「先生に言われた」の創作は禁止）。</b></div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">七</span><span><b>原因すり替えストーリー型</b></span><span class="r">実例 296いいね（同筋の伸び最大2,802〜1,441）</span></div>
+  <div class="post-b">誰も教えてくれへん話するわ。ウチがサポートしてた更年期の女性（50代）の方が80㎏やった頃、毎日サラダチキンとブロッコリーで1200kcalに抑えてるのに、3ヶ月で1㎏も減らんかった。「アタイの体おかしんちゃうか？」って絶望してた時に、たまたま見てた海外のダイエット本に「代謝が死んでる人の3アクション」っていう記載があった。「カロリー減らしても痩せへんのは、脂肪を燃やす材料が足りてないだけ」って書いてあって、「え？！」ってなったw 半信半疑で3つ全てやらせた結果、、、</div>
+  <div class="post-cap">「頑張ってるのに痩せない→原因は意志ではなく仕組み（代謝・肝臓・腸）」のすり替え物語。フックで結果を伏せ「、、、」で自己返信へ引く。脂肪肝・肝臓ナラティブ（1,662〜1,265いいね）と同じ2026年の勝ち筋。</div>
+</div>
+
+<h3>不採用の型と理由（伸びていても使わない）</h3>
+<div class="grid">
+  <div class="card bad"><h4>進行形悩み日記型（実例 911いいね）</h4><p>「体重がどんどん増えている48歳女です。只今154センチ62キロ。…こんな私にアドバイスをお願いします」。伸びるが、<b>「痩せた人」ペルソナと矛盾</b>する（これから痩せたい人の日記はなりすましになる）ため不採用。</p></div>
+  <div class="card bad"><h4>マウント前置き型（実例 1,327／1,320いいね）</h4><p>「マウント取ってもいいですか」→実績数字。<b>同一フレーズが同時期に2本並びテンプレ化済み</b>＝今から乗ると二番煎じに見えるため不採用。ほか従来からの禁止型: 無料企画・参加したい人ー？型（腸活帯では81・36いいねで全滅）、有名人引用型（出典を自分で担保できない）。</p></div>
+</div>
+
+<h3>ツリーの3構造（品質事件で判明した最重要の発見）</h3>
+<div class="quote">
+  <b>伸び投稿の多くは「1つ目＝フック専用（中身ゼロ）、2つ目の自己返信＝有益な本体」のツリー構造。</b>単発生成ではこの型を再現できない。参考元は本文90字の断片ではなく、全文＋ツリー＋コメント欄まで開いて分析する。
+</div>
+<div class="grid">
+  <div class="card hot"><h4>① 本格ツリー型</h4><p>フック→自己返信で番号構造の本体→締めCTA。実例: 12連ツリーで各継続が200〜1,500いいね（途中に「半分です」で離脱防止、締めが771）。3連の教科書型は「実績＋予告→①〜⑤全出し→番号コメント誘導」（本体112・2つ目85）。</p></div>
+  <div class="card"><h4>② ピン留め返信型</h4><p>本文で固有名詞を伏せて興味を引き、ピン留めした自己返信で開示（実例: 薬名開示の返信が120いいね・「何の薬？」リプが大量発生）。挙手フック→ピン留めで軽い導線を置く変形も。</p></div>
+  <div class="card"><h4>③ 単発・全リプ返信型</h4><p>ツリーなしの単発完結。代わりにコメント欄で1件ずつ共感返し（実例: 932いいね投稿）や大喜利参戦（「対戦どうぞ」4,211いいね）で会話数を稼ぐ。リプ運用（全リプ2時間以内）とセット。</p></div>
+</div>
+
+<h3>文章の方向性（3原則）</h3>
+<div class="grid">
+  <div class="card hot"><h4>現在形で書く</h4><p><b>過去形の成功譚回顧録・文学的な整った表現は死ぬ。</b>「〜でした」の振り返りではなく、今まさに起きている描写・実況のトーンで書く。</p></div>
+  <div class="card hot"><h4>口語の乱れを残す</h4><p>「、、、」「！！！」「〜なんだ😭」の絶叫語尾・言い差し・くだけた文法をあえて残す。整いすぎた文はAI臭として読者に弾かれる。</p></div>
+  <div class="card hot"><h4>有益ファースト</h4><p>挙手・共感だけの投稿は無名アカウントでは無効。<b>立ち上げ期は有益コンテンツで集める構造が主軸</b>（フック→自己返信に原因分解・番号構造・機序→帰結の本体を必ず積む）。挙手系は認知後に解禁。</p></div>
+</div>
+
+<h2 class="serif" id="watch"><span class="no">5</span>監視アカウント5件と運用フロー</h2>
+<p class="note">「600いいね超の投稿を繰り返し出しているアカウント」を実測で選定（2026-08-10）。フォロワーは実測値、いいね率は代表投稿の実測。</p>
+
+<div class="tw"><table>
+  <tr><th>アカウント</th><th>フォロワー実測</th><th>600超いいね投稿</th><th>最大いいね</th><th>学ぶこと</th></tr>
+  <tr><td><b>@rese.and.natur</b></td><td class="n">49,000</td><td class="n">7本</td><td class="n hi">1,662</td><td>番号列挙ツリー・脂肪肝/肝臓ナラティブの量産構造（サンプル3のトレース元）</td></tr>
+  <tr><td><b>@hakkou_san</b></td><td class="n">10,000</td><td class="n">3本</td><td class="n">2,086</td><td>発酵×腸活の固有名詞運用</td></tr>
+  <tr><td><b>@galette_homel_diet</b></td><td class="n">12,000</td><td class="n">2本</td><td class="n hi">100,000</td><td>更年期問いかけ型の爆発事例（外れ値バズ含む）</td></tr>
+  <tr><td><b>@rikaho_diet</b></td><td class="n">2,830</td><td class="n">2本</td><td class="n">10,000</td><td>小規模でも率が出る挙手型（610いいね＝<b>率21.6%</b>実測。サンプル1のトレース元）</td></tr>
+  <tr><td><b>@yumeyume_356</b></td><td class="n">2,475</td><td class="n">2本</td><td class="n">1,342</td><td>伝聞権威型（肥満外来の先生に聞いた）を小アカウントで再現（最大投稿の率54%相当）</td></tr>
+</table></div>
+
+<h3>運用フロー: 巡回 → 実物トレース生成</h3>
+<div class="flow">
+  <div class="step"><p class="fn">一</p><b>巡回</b><p>監視5アカウントの新着＋検索フィードから、いいね率と100いいね下限を満たす「実物」を収集する</p></div>
+  <div class="step"><p class="fn">二</p><b>実物を開く</b><p>本文の全文＋ツリー継続＋コメント欄上位まで読み、どの層に当たりどの感情を起こしたかを掴む（90字断片の参照は禁止）</p></div>
+  <div class="step"><p class="fn">三</p><b>トレース生成</b><p>1行目のフック構造・分割位置・リズムだけを借りて自分の実話に載せ替える。複数案を作りベストオブNで選抜</p></div>
+  <div class="step"><p class="fn">四</p><b>批評・差し戻し</b><p>批評役が参考元と並べて採点。差し戻し上限3回、超えたら没にする</p></div>
+  <div class="step"><p class="fn">五</p><b>オーナー承認</b><p>量産前にサンプルを提示して合格必須。合格した型だけを予約投稿に回す</p></div>
+</div>
+<p class="note" style="margin-top:10px">語句のコピーは禁止（借りるのは構造だけ）。下書きの末尾には「参考元: URL（いいね数）」を必ず記録し、参考元なしの投稿は作らない。</p>
+
+<h2 class="serif" id="profile"><span class="no">6</span>プロフィール設計（決定版）</h2>
+
+<div class="stats">
+  <div class="stat acc"><p class="l">名前</p><p class="v" style="font-size:16px">おやせ｜更年期でも運動ゼロ-14kg</p></div>
+  <div class="stat"><p class="l">ユーザー名</p><p class="v" style="font-size:16px">@diet.bicho158</p></div>
+  <div class="stat"><p class="l">リンク欄</p><p class="v" style="font-size:16px">LINE登録リンク1本のみ</p></div>
+</div>
+
+<h3>bio（決定版・全文）</h3>
+<pre><code>47歳2児ママ|158cm 73kg→59kg（-14kg）
+◆健康診断で再検査、脂肪肝E判定にビビる
+◆ずっとダイエット失敗20年
+◆腸活に出会ってほんと人生変わった✨
+運動も食事制限も続かなかった私の詳しいダイエット法は…⬇︎</code></pre>
+
+<h3>設計原理</h3>
+<ul class="plain">
+  <li><b>名前は「刺す語」で構成。</b>表示名は検索テキストマッチの対象（Meta公式）＝最も確実に効く面。拡散語（むくみ等）ではなく、講座ターゲットに刺さる悩み語（更年期・運動ゼロ）＋実数-14kgを置く。「名前｜数字実績」は実測上位アカウント（3.3万・5.5万等）で共通の勝ち型</li>
+  <li><b>bio1行目＝年代＋実数証明。</b>「47歳2児ママ」「158cm 73kg→59kg」で自分ごと化。以降は健診再検査・失敗20年という読者と同じ痛みの実話→方法（腸活）→固定投稿への導線の順</li>
+  <li><b>全文が体験報告形式。</b>「必ず痩せる」「あなたも-14kg」等の保証断定なし（規約・薬機法セーフ基準）。数字はすべてオーナー確定の実数のみ</li>
+  <li><b>BA画像は「顔を絵文字で隠した正面写真（73kg→59kg）」</b>を正とする。後ろ姿比較3,285いいねの実例どおり、顔出しなしで成立する</li>
+  <li><b>興味タグは10枠すべて使う</b>（ダイエット・腸活・むくみ・便秘・更年期・40代など。拡散語はここでフォローする）。導線はプロフィール→固定投稿→LINEの一本道に収束させる</li>
+</ul>
+
+<h2 class="serif" id="samples"><span class="no">7</span>サンプル投稿3本（承認待ち・ツリー全文）</h2>
+<p class="note">新工程（実物トレース→ベストオブN→批評→承認）で作成した承認用サンプル。ペルソナの実話のみ使用。<b>オーナー合格までは投稿しない。</b></p>
+
+<div class="post">
+  <div class="post-h"><span class="n">1</span><span><b>挙手型＋有益ファースト改造</b></span><span class="r">トレース元: 挙手型 610いいね・率21.6%</span></div>
+  <div class="post-b">73kgのときウエストがパンパンで
+「痩せたらまた着る」って
+しまい込んだ服。
+まだクローゼットにある人？🙋‍♀️
+
+私は何年も取ってた。
+捨てたら負けな気がして。</div>
+  <div class="post-b sub">【自己返信】
+で、なんで着られなくなるか。
+
+食べる量は変わってないのに
+服がきつくなるの、意志が弱いからじゃないよ。
+40代は更年期で代謝が落ちるのに
+腸が止まったままだと
+むくみも脂肪もため込む側に体が傾くから。
+
+私はここで運動じゃなくて腸に振った。
+最初にやったのは朝のもずく。これだけ。
+お腹の張りが先に消えて、体重はあとからついてきた。
+158cm 73kg→59kg。3ヶ月の時点で-12kg。
+
+ちなみにあなたのクローゼットで
+いちばん長く寝てる服、何年もの？</div>
+  <div class="post-cap">1行目に体重実数＋体感覚語（パンパン）を載せて挙手構造を維持。挙手だけ禁止ルールに合わせ、2つ目に原因（更年期×腸）と具体策1つ（朝のもずく）を実装し、締めを問いかけで返した。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">2</span><span><b>本格3連ツリー（実績予告→番号本体→誘導）</b></span><span class="r">トレース元: 3連ツリー 112いいね・率2.9%</span></div>
+  <div class="post-b">47歳、健診で再検査。脂肪肝はまさかのE判定。
+疲れは抜けないしお腹だけ出てるし、心当たりしかない。
+そこから運動ゼロ、158cm 73kgから3ヶ月で-12kg。
+先に変えたのは食事制限じゃなくて、腸の習慣5つ。</div>
+  <div class="post-b sub">【自己返信・2つ目】
+効いた順に書いとく。
+
+①朝起きてすぐの白湯
+（寝てる間に止まった腸を起こす）
+②甘いカフェオレは無糖のお茶か炭酸水に
+（飲む糖はまっすぐ肝臓にたまる）
+③お米は抜かない。先にわかめの味噌汁
+（食物繊維が先だと糖の吸収がおだやか）
+④夜ごはんに納豆かキムチをどっちか
+（善玉菌は毎日ちょい足しでいい）
+⑤おやつは禁止しない
+（我慢の反動のドカ食いがいちばんたまる）
+
+運動は最後まで入れてない。
+体重より先に、お腹の張りと朝のだるさが抜けてくる。
+
+あ、りんご酢を原液で飲むのだけはやめて。
+私はあれで胃を壊した。
+
+▶︎白湯だけなら明日の朝からできるから。</div>
+  <div class="post-b sub">【自己返信・3つ目】
+①〜⑤でいちばんハードル高いの、どれ？
+番号だけでいいからコメントで教えて。
+
+細かいやり方はプロフィールに置いてます。
+47歳・ダイエット失敗歴20年でも間に合った記録です。</div>
+  <div class="post-cap">E判定→共感→実績→予告の4行フック（結論は2つ目まで出さないトレース構造を維持）。誘導は直リンクでなくプロフィール軽着地に変更し、りんご酢原液の実話を注意書きとして足して差別化。保証断定は排除。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">3</span><span><b>やめたこと型×番号列挙ツリー</b></span><span class="r">トレース元: 番号列挙ツリー 365いいね（フォロワー4.9万）</span></div>
+  <div class="post-b">何しても痩せない、お腹は張る。
+158cm 73kgだった私が
+毎日ぜんぶやってた「腸を止める習慣」❼つ。
+
+①朝ごはんを抜く
+（食べないと腸が動くスイッチが入らない）</div>
+  <div class="post-b sub">【自己返信・2つ目】
+②水を飲まずコーヒーばっかり
+（水が足りないと便はかたくなる一方）
+③昼はパンとサラダで済ませる
+（たんぱく質が足りないと代謝が回らない）
+④りんご酢を原液でぐいっと
+（効きそうでしょ。私はこれで胃を壊した）
+⑤夜遅くにドカ食い
+（寝てる間まで腸が残業になる）
+⑥ヨーグルト食べてるから大丈夫だと思ってる
+（菌を入れてもエサの食物繊維がないと働かない）
+⑦湯船に入らずシャワーだけ
+（お腹をさわって冷たい人はまずここ）
+
+これ、頑張ってないからじゃないんだよね。
+むしろ真面目にダイエットしてる人ほど①と③をやってる。
+
+で、どこから直すかというと↓</div>
+  <div class="post-b sub">【自己返信・3つ目】
+全部いっぺんにやめようとしない。
+私は①の朝だけ変えた。
+起きたら白湯、朝ごはんはもずくから。ここだけ。
+
+それでも更年期どまんなかの47歳が
+73kg→59kgまで来たし、
+同じやり方で痩せた友達が4人いる。
+
+❼つのうち、いくつ当てはまった？
+数字でコメントに置いてって。</div>
+  <div class="post-cap">医学的裏取り不能な症状列挙は却下し、実話で全項目を担保できる「やめたこと型×番号列挙」を選抜。タイトル＋①だけ置いて2つ目へ引く分割位置と（）注釈のリズムを踏襲。締めは番号コメントの問いかけ・導線なしの軽い引き。</div>
+</div>
+
+<h2 class="serif" id="system"><span class="no">8</span>運用システム概要</h2>
+<p class="note">仕組みの説明のみ（接続情報・認証情報は本書に含まない）。</p>
+
+<div class="grid">
+  <div class="card hot"><h4>1日20本・時間分散</h4><p>品質ゲート通過が前提で1日20本（未達の日は本数より品質を優先）。同時・連続投稿は絶対にせず、<b>最低20分間隔・1回の実行で1本まで・1日上限</b>の3重ガードで分散。朝〜夜の伸び時間帯に約45分間隔で配置する。</p></div>
+  <div class="card hot"><h4>クラウド自動投稿</h4><p>クラウド上の定時実行（15分周期）が予約表の時刻を監視し、時間が来た下書きを自動投稿。<b>PCの電源に依存しない。</b>APIトークンは残り日数を監視して自動更新（失効の恒久対策済み）。二重投稿防止・期限切れスキップの安全機構つき。ツリー投稿（自己返信の連結）に対応。</p></div>
+  <div class="card"><h4>リプ・投稿のChatwork通知</h4><p><b>リプ通知:</b> 15分おきに直近7日の全投稿の返信を監視し、新着をチャットに通知（既読管理付き）。運用方針は全リプ2時間以内・1行共感＋聞き返し・リプ欄で営業しない。<b>投稿ログ通知:</b> 投稿完了ごとに本文＋型＋意図＋参考元URL＋投稿URLを自動送信し、事後チェックできる。</p></div>
+  <div class="card"><h4>分析ダッシュボード</h4><p>ローカルのWebダッシュボード4タブ——ホーム（今日の投稿状況・予約一覧・累計数字）／投稿管理（生成・即時投稿・予約・削除）／分析（投稿別のビュー・いいね・返信・再投稿）／キーワード辞書（8カテゴリの語彙をクリックでコピー）。</p></div>
+</div>
+
+<h3>投稿前の品質ゲート（5項目すべてYESで公開）</h3>
+<ol class="rules">
+  <li><b>冒頭フック</b> — 最初の3行で読む価値が伝わるか（スクロールを止められるか）</li>
+  <li><b>1投稿1メッセージ</b> — 持ち帰りが1つに絞られているか</li>
+  <li><b>AI臭ゼロ</b> — 定型句・過剰断定・整いすぎた文がないか（口語の乱れを残す）</li>
+  <li><b>具体性</b> — 数字・体験・手順など検証できる具体が最低1つあるか</li>
+  <li><b>導線整合</b> — 行き先がプロフィール→固定→LINEの一本道に収束しているか</li>
+</ol>
+
+<h3>生成の必須ルール（型引用・語彙）</h3>
+<ul class="plain">
+  <li><b>型引用ルール:</b> 全投稿は、いいね100以上の実測データを持つ他者投稿を参考元に持つ。1行目のフック構造を最も強い形で自分の内容に載せ替える（語句コピー禁止・構造のみ）。末尾メタに参考元URLといいね数を必ず記録</li>
+  <li><b>1行目フックの語彙ルール:</b> 1行目には必ず実測語彙（更年期／痩せない／コレステロール／健診／体重の実数／むくみ／リバウンド等）を1つ以上入れる。抽象語だけの1行目は禁止。3語セットは2本に1本の頻度で1行目に入れる</li>
+  <li><b>キーワード運用:</b> 1投稿に「身長＋体重」形式の数字1つ・固有名詞1つ、体感覚語を冒頭3行に、年代語を週2回、締めは問いかけ（数字つき報告型は例外可）。無料企画・参加したい人ー？型は禁止</li>
+  <li><b>表現の安全基準:</b> 効果の断定をせず体験の記述に留める（薬機法・景表法）。数字は実測のみ。教わった話は実在の指導・書籍・発言に限る（創作禁止）</li>
+</ul>
+
+<p class="foot">
+本書は運用者向けの内部リサーチ統合ドキュメントの公開版。いいね数・フォロワー数はすべて収集時点の表示値（古い投稿ほど累積している）。Threads側の一部データは投稿者フォロワー未測定のため、いいね率主基準の確定判定は保留のまま暫定値として記載。引用した投稿全文は型分析のための実例引用であり、各投稿の権利は投稿者に帰属する。2026-08-16 作成。
+</p>
+</main>
+</div>
+
+<script>
+(function(){
+const links=[...document.querySelectorAll('.toc a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+if(!secs.length)return;
+const mark=()=>{let cur=secs[0];
+ for(const s of secs){if(s.getBoundingClientRect().top<=110)cur=s}
+ if(window.scrollY+window.innerHeight>=document.body.scrollHeight-4)cur=secs[secs.length-1];
+ links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur.id));};
+addEventListener('scroll',mark,{passive:true});
+addEventListener('resize',mark,{passive:true});
+mark();
+})();
+</script>
+</body>
+</html>
