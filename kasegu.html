@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Threads 稼ぐ系リサーチ 統合ドキュメント</title>
+<style>
+:root{
+--bg:#0F0D0A;--panel:#161210;--soft:#1D1814;--ink:#F2EDE4;--muted:#BEB4A5;--faint:#8B8172;
+--line:#332B22;--line2:#443A2E;
+--accent:#E8730C;--accent-hi:#F59A45;--accent-soft:rgba(232,115,12,.13);--accent-line:#7A4413;
+--red:#FF7A6E;--red-soft:rgba(214,47,47,.14);--red-line:#6B2A24;
+--ok:#8FC7A8;--ok-soft:rgba(46,107,79,.22);
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;color:var(--ink);line-height:1.85;font-size:15.5px;
+font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;
+-webkit-font-smoothing:antialiased}
+.serif{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif}
+a{color:var(--accent-hi)}
+.layout{max-width:1140px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:212px minmax(0,1fr);gap:46px}
+.toc{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:42px 0;font-size:13px}
+.toc .t{font-size:11px;letter-spacing:.2em;color:var(--accent);font-weight:600;margin:0 0 12px}
+.toc a{display:block;padding:5px 0 5px 12px;color:var(--muted);text-decoration:none;border-left:2px solid var(--line)}
+.toc a:hover{color:var(--ink);border-left-color:var(--accent-line)}
+.toc a.on{color:var(--accent-hi);border-left-color:var(--accent);font-weight:600}
+main{padding:46px 0 120px;min-width:0}
+.eyebrow{font-size:11.5px;letter-spacing:.22em;color:var(--accent);font-weight:600;margin:0 0 8px}
+h1{font-size:31px;line-height:1.45;margin:0 0 12px;font-weight:600;text-wrap:balance}
+h2{font-size:22px;margin:70px 0 6px;font-weight:600;scroll-margin-top:24px;text-wrap:balance;color:var(--ink)}
+h2 .no{color:var(--accent);margin-right:10px}
+h3{font-size:16.5px;margin:34px 0 10px;font-weight:600}
+h4{font-size:14.5px;margin:22px 0 8px;font-weight:600}
+.lede{color:var(--muted);margin:0;max-width:42em}
+.meta{display:flex;gap:16px 22px;flex-wrap:wrap;margin:20px 0 0;font-size:13px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600}
+hr{border:none;border-top:1px solid var(--line);margin:24px 0 0}
+.note{color:var(--muted);font-size:13.5px;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(236px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:6px;padding:16px 18px;background:var(--panel)}
+.card.hot{border-color:var(--accent-line);background:var(--accent-soft)}
+.card.bad{border-color:var(--red-line);background:var(--red-soft)}
+.card h4{margin:0 0 7px;font-size:14px}
+.card p{margin:0;font-size:13px;color:var(--muted)}
+.card.hot p{color:#E8D5BE}
+.card.bad p{color:#E0BDB6}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin:18px 0 20px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.stat .l{font-size:11.5px;color:var(--faint);margin:0}
+.stat .v{font-size:21px;font-weight:600;margin:2px 0 0;font-variant-numeric:tabular-nums;line-height:1.4}
+.stat.acc{border-color:var(--accent-line)}
+.stat.acc .v{color:var(--accent-hi)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-weight:600;padding:8px 11px;border-bottom:2px solid var(--line2);white-space:nowrap;color:var(--ink)}
+td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--muted)}
+td b{color:var(--ink)}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.n.hi{color:var(--accent-hi);font-weight:600}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;
+background:var(--accent-soft);color:var(--accent-hi);white-space:nowrap}
+.badge.gray{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}
+.badge.red{background:var(--red-soft);color:var(--red)}
+.kws{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 0}
+.kw{font-size:12.5px;padding:2px 11px;border-radius:999px;background:var(--soft);border:1px solid var(--line);white-space:nowrap;color:var(--muted)}
+.kw.star{background:var(--accent);border-color:var(--accent);color:#22130A;font-weight:600}
+.kwbox{border:1px solid var(--line);border-radius:6px;padding:13px 16px;margin:0 0 10px;background:var(--panel)}
+.kwbox.hot{border-color:var(--accent-line);background:var(--accent-soft)}
+.kwh{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.kwh .t{font-weight:600;font-size:14px}
+.kwh .w{font-size:12px;color:var(--faint)}
+.post{border:1px solid var(--line);border-radius:6px;margin:0 0 12px;overflow:hidden;background:var(--panel)}
+.post-h{display:flex;align-items:center;gap:9px;padding:9px 15px;background:var(--soft);
+border-bottom:1px solid var(--line);font-size:12.5px;flex-wrap:wrap;color:var(--muted)}
+.post-h .n{font-family:"Hiragino Mincho ProN",serif;font-size:16px;color:var(--accent-hi);font-weight:600}
+.post-h .r{margin-left:auto;color:var(--faint);font-size:12px}
+.post-b{padding:13px 17px;white-space:pre-line;font-size:14px;line-height:1.95;color:var(--ink)}
+.post-b.sub{border-top:1px dashed var(--line);color:var(--muted)}
+.post-cap{padding:9px 15px;background:var(--soft);border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.quote{border-left:3px solid var(--accent);padding:12px 16px;background:var(--panel);margin:16px 0;font-size:13.5px;color:var(--muted);border-radius:0 6px 6px 0}
+.quote.warn{border-left-color:var(--red)}
+.quote b{font-weight:600;color:var(--ink)}
+pre{background:var(--panel);border:1px solid var(--line);padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.8;color:var(--ink)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+ol.rules{counter-reset:r;list-style:none;padding:0;margin:14px 0 0}
+ol.rules li{counter-increment:r;position:relative;padding:10px 0 10px 40px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
+ol.rules li b{color:var(--ink)}
+ol.rules li::before{content:counter(r);position:absolute;left:0;top:10px;width:24px;height:24px;border-radius:50%;
+background:var(--accent-soft);color:var(--accent-hi);font-size:12px;font-weight:600;
+display:flex;align-items:center;justify-content:center;font-family:"Hiragino Mincho ProN",serif}
+ul.plain{margin:10px 0 0;padding-left:1.3em;font-size:14px;color:var(--muted)}
+ul.plain li{margin:7px 0}
+ul.plain li::marker{color:var(--accent)}
+ul.plain b{color:var(--ink)}
+.axis{margin:18px 0 6px}
+.axis-lbl{text-align:center;font-size:11.5px;letter-spacing:.1em;color:var(--faint);padding:5px 0}
+.map{display:grid;grid-template-columns:22px 1fr 1fr}
+.side{writing-mode:vertical-rl;text-orientation:upright;font-size:10.5px;letter-spacing:.14em;
+color:var(--faint);display:flex;align-items:center;justify-content:center}
+.q{border:1px solid var(--line);padding:13px 15px;min-height:120px;background:var(--panel)}
+.q.hot{background:var(--accent-soft);border:2px solid var(--accent)}
+.q .ql{font-size:11px;color:var(--faint);margin:0 0 2px;letter-spacing:.06em}
+.q .qn{font-size:14px;font-weight:600;margin:0 0 8px}
+.q.hot .qn{color:var(--accent-hi)}
+.q .qd{font-size:12px;margin:6px 0 0;color:var(--muted)}
+.q.danger .qd{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--soft);
+border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.flow{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px;align-items:stretch}
+.flow .step{flex:1 1 150px;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:12px 14px;position:relative}
+.flow .step .fn{font-family:"Hiragino Mincho ProN",serif;color:var(--accent);font-weight:600;font-size:15px;margin:0 0 4px}
+.flow .step p{margin:0;font-size:12.5px;color:var(--muted)}
+.flow .step b{color:var(--ink);font-size:13px;display:block;margin-bottom:3px}
+.foot{font-size:12px;color:var(--faint);margin-top:60px;border-top:1px solid var(--line);padding-top:18px;line-height:1.9}
+@media(max-width:840px){
+.layout{grid-template-columns:1fr;gap:0}
+.toc{position:static;max-height:none;padding:22px 0 0;border-bottom:1px solid var(--line);margin-bottom:6px}
+.toc .list{display:flex;flex-wrap:wrap;gap:5px}
+.toc a{border-left:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12px}
+.toc a.on{border-color:var(--accent)}
+h1{font-size:24px}h2{font-size:19.5px}
+.map{grid-template-columns:16px 1fr 1fr}
+}
+</style>
+<style>
+/* 稼ぐ系版の追加: アカウント名のチップが長いので象限内で折り返す */
+.q{min-width:0}
+.chip{white-space:normal;overflow-wrap:anywhere}
+td.memo{min-width:230px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc">
+  <p class="t">目次</p>
+  <div class="list">
+    <a href="#now">0. 現在地サマリー</a>
+    <a href="#strategy">1. 狙いどころ</a>
+    <a href="#market">2. 市場と競合</a>
+    <a href="#keywords">3. キーワード</a>
+    <a href="#types">4. 投稿の型</a>
+    <a href="#watch">5. 監視アカウント</a>
+    <a href="#profile">6. プロフィール設計</a>
+    <a href="#samples">7. 固定投稿の実例</a>
+    <a href="#system">8. 調査方法と次の工程</a>
+  </div>
+</nav>
+
+<main>
+<div>
+  <p class="eyebrow">THREADS RESEARCH DOSSIER ｜ 2026.10 版</p>
+  <h1 class="serif">Threads 稼ぐ系アカウント リサーチ<br>AI・副業ジャンル 監視候補68件</h1>
+  <p class="lede">新しく稼ぐ系に特化したアカウントを運用するための競合リサーチを1ページに統合した。9月に選んだ監視候補68件の直近投稿を10/21に全件取り直し、伸び方・投稿の型・語彙・プロフィールまで実測で分析した。数字はすべて収集時点の表示値。</p>
+  <div class="meta">
+    <span>対象 <b>68アカウント（12ジャンル）</b></span>
+    <span>重点 <b>AI・副業</b></span>
+    <span>分析母数 <b>直近投稿1,613件（100超107件・うち稼ぐ系の中身77件）</b></span>
+    <span>収集日 <b>選定 9/7〜8 ／ 再収集 10/21</b></span>
+  </div>
+  <hr>
+</div>
+
+<h2 class="serif" id="now"><span class="no">0</span>現在地サマリー</h2>
+<p class="note">2026-10-21 時点。</p>
+<div class="stats">
+  <div class="stat acc"><p class="l">監視候補</p><p class="v">68件</p></div>
+  <div class="stat"><p class="l">100超を3回以上（直近で実測）</p><p class="v">13件<span style="font-size:13px;color:var(--muted)">（稼ぐ系の中身で8件）</span></p></div>
+  <div class="stat"><p class="l">直近の最高いいね（ジャンル内）</p><p class="v">2,173<span style="font-size:13px;color:var(--muted)"> @syuri_fun_life</span></p></div>
+  <div class="stat"><p class="l">状態</p><p class="v" style="font-size:16px;color:var(--red)">運用アカウントは未設計</p></div>
+</div>
+
+<div class="grid">
+  <div class="card"><h4>調査の目的と条件（9/7 オーナー指示）</h4><p>新しく稼ぐ系に特化したアカウントを運用するための監視候補集め。対象は稼ぐ系アカウント全般（AI・副業を重点）、条件は「いいねorコメント100件以上を3回以上出したことがある」。</p></div>
+  <div class="card"><h4>今回やったこと（10/21）</h4><p>9月は検索結果に見えた本数でしか「3回以上」を判定できていなかったため、68件すべての直近投稿（1アカウント最大40件・ツリー込み）を取り直し、フォロワー・100超の本数・いいね率を実測し直した。閲覧できなかった3件は一覧に「閲覧不可」と記載。</p></div>
+  <div class="card hot"><h4>まだ決まっていないこと</h4><p>運用するアカウントの<b>3語セット・ペルソナ・導線（受け皿）は未決定</b>。このページはその判断材料。ダイエット版でいう「サンプル投稿」は、ペルソナが決まってから作る（7章は代わりに競合の固定投稿をツリー全文で掲載）。</p></div>
+</div>
+
+<h3>ここまでの経緯（要約）</h3>
+<div class="tw"><table>
+  <tr><th>時期</th><th>出来事</th></tr>
+  <tr><td>9/7</td><td>Threads検索27ワードでスイープ（有効は約20ワード）。100超の投稿主から稼ぐ系だけを残し、監視候補45件・7区分</td></tr>
+  <tr><td>9/8</td><td>追加18ワード（ココナラ・Claude Code・パート辞めたい等）を検索＋全件のフォロワーを巡回 → 62件・11区分。Googleシートに反映</td></tr>
+  <tr><td>9/8</td><td>案件・モニター募集系（モニター／案件／即金／pay等）を収集 → 6件を新区分で追加し68件・12区分</td></tr>
+  <tr><td>10/21</td><td>全68件の直近投稿1,613件を再収集し、100超の本数・いいね率・型・語彙・プロフィールを分析 → <b>このページ（いまここ）</b></td></tr>
+</table></div>
+
+<h2 class="serif" id="strategy"><span class="no">1</span>狙いどころ（戦略の材料）</h2>
+<p class="note">ダイエット版の「戦略」はオーナー決定事項だったが、稼ぐ系はまだ決定前。ここではリサーチから言えることだけを並べる（決めるのはオーナー）。</p>
+
+<div class="quote">
+  <b>リサーチの結論（暫定）:</b> 稼ぐ系の主流は「実績・肩書き×AIツール」だが、<b>数が多いわりに率が低い</b>（24件・100超の率の中央値3.2%）。率が高いのは<b>等身大の当事者</b>側で（中央値25.4%・18.1%）、特に「当事者×AIツール」は8件しかおらず、3回以上を出しているのは1件だけ。
+</div>
+
+<div class="tw"><table>
+  <tr><th>決めること</th><th>リサーチ上の材料</th><th>根拠</th></tr>
+  <tr><td><b>ポジション</b></td><td>「当事者×AIツール」（③）か「当事者×働き方」（④）が候補。①の実績系は激戦</td><td>→ 2章 4象限</td></tr>
+  <tr><td><b>3語セット</b></td><td>伸び投稿に多い語は「Claude Code」「在宅」「月収・月◯万」「◯歳（年代）」。「無料」は伸びにも伸びないにも同じくらい出る</td><td>→ 3章 頻出ワード</td></tr>
+  <tr><td><b>名乗り</b></td><td>同じ名乗り（例「週4パート＆在宅ワークで働く45歳です。」）で毎回始めるアカウントが最も安定（39本中18本が100超）</td><td>→ 4章 四の型</td></tr>
+  <tr><td><b>導線</b></td><td>固定投稿で無料のもの（プロンプト集・note・オプチャ）を配り、リンクは本文ではなくツリー2つ目に置くのが定石</td><td>→ 7章 固定投稿</td></tr>
+</table></div>
+
+<h3>稼ぐ系とダイエットの共通点（ダイエット版の学びが使えるところ）</h3>
+<div class="grid">
+  <div class="card"><h4>当事者の実話が強い</h4><p>ダイエットでは「当事者×複合不調」の席が空いていた。稼ぐ系でも、実績を見せる人より「パート・初心者・挑戦中」の当事者のほうが率が高い。</p></div>
+  <div class="card"><h4>問いかけが効く</h4><p>「〜な人いる？」「同じ気持ちの人いませんか？」は、100超投稿の10%に出て、100未満では4%。ダイエットの「挙手型」と同じ構造。</p></div>
+  <div class="card"><h4>ツリーで本体を出す</h4><p>伸び投稿の29/77件がツリー付き。1つ目はフックだけ、2つ目以降に手順・リスト・リンクを置く。ダイエット版で品質事件のあとに定めた構造とほぼ同じ。</p></div>
+</div>
+
+<h2 class="serif" id="market"><span class="no">2</span>市場と競合</h2>
+<p class="note">監視候補68件の直近投稿1,613件（10/21収集）にもとづく。「100超」はいいね又はコメント100以上。</p>
+
+<h3>ジャンル別の規模</h3>
+<div class="tw"><table><tr><th>ジャンル大枠</th><th>件数</th><th>フォロワー中央値</th><th>3回以上を実測</th><th>直近の100超投稿</th><th>直近の最高いいね</th></tr><tr><td><b>AI活用・AI情報</b></td><td class="n">19</td><td class="n">2,132</td><td class="n hi">2</td><td class="n">20</td><td class="n">1,423<br><span style="color:var(--faint);font-size:12px">@furio_gpt</span></td></tr><tr><td><b>AI×ClaudeCode</b></td><td class="n">8</td><td class="n">1,696</td><td class="n hi">3</td><td class="n">12</td><td class="n">513<br><span style="color:var(--faint);font-size:12px">@mokumoku416_ai</span></td></tr><tr><td><b>AI画像・プロンプト</b></td><td class="n">1</td><td class="n">130</td><td class="n hi">1</td><td class="n">4</td><td class="n">8,311<br><span style="color:var(--faint);font-size:12px">@aibijo_images_creator</span></td></tr><tr><td><b>AI副業・副業ノウハウ</b></td><td class="n">4</td><td class="n">141</td><td class="n">0</td><td class="n">2</td><td class="n">230<br><span style="color:var(--faint);font-size:12px">@ojisan_meets_ai</span></td></tr><tr><td><b>note・コンテンツ販売</b></td><td class="n">4</td><td class="n">907</td><td class="n">0</td><td class="n">0</td><td class="n">80<br><span style="color:var(--faint);font-size:12px">@rin.noter</span></td></tr><tr><td><b>ココナラ・スキルシェア</b></td><td class="n">6</td><td class="n">1,146</td><td class="n">0</td><td class="n">1</td><td class="n">327<br><span style="color:var(--faint);font-size:12px">@pomechan43</span></td></tr><tr><td><b>Webライター・動画編集</b></td><td class="n">2</td><td class="n">9,905</td><td class="n">0</td><td class="n">2</td><td class="n">2,173<br><span style="color:var(--faint);font-size:12px">@syuri_fun_life</span></td></tr><tr><td><b>物販・せどり・アフィリエイト</b></td><td class="n">5</td><td class="n">2,552</td><td class="n hi">1</td><td class="n">6</td><td class="n">379<br><span style="color:var(--faint);font-size:12px">@rei_handmade.accessory</span></td></tr><tr><td><b>SNS運用・集客</b></td><td class="n">8</td><td class="n">2,065</td><td class="n hi">4</td><td class="n">34</td><td class="n">1,236<br><span style="color:var(--faint);font-size:12px">@threads_shukyaku</span></td></tr><tr><td><b>投資・マネー</b></td><td class="n">4</td><td class="n">780</td><td class="n">0</td><td class="n">6</td><td class="n">1,535<br><span style="color:var(--faint);font-size:12px">@kabukurashuhu</span></td></tr><tr><td><b>その他・情報発信</b></td><td class="n">1</td><td class="n">25,765</td><td class="n hi">1</td><td class="n">11</td><td class="n">2,615<br><span style="color:var(--faint);font-size:12px">@book_meyer</span></td></tr><tr><td><b>案件・モニター募集</b></td><td class="n">6</td><td class="n">151</td><td class="n hi">1</td><td class="n">9</td><td class="n">1,552<br><span style="color:var(--faint);font-size:12px">@mao_eye.design</span></td></tr></table></div>
+<p class="note">「3回以上を実測」は直近投稿の範囲で100超が3本以上あったアカウント数。書評・メイク・ミーム等で伸びた投稿も含む素の数字（→ 5章で中身を区別）。</p>
+
+<h3>ポジション: 4象限でみると「当事者×AIツール」が空いている</h3>
+<p class="note">投稿の中身・表示名・bioから68件を手で振り分け。率はジャンル外の投稿（ミーム・書評・雑談など）を除いた100超投稿で計算。</p>
+<div class="axis">
+  <div class="axis-lbl">▲ 実績・肩書きで信頼させる（年収・月商・会社経営・講師）</div>
+  <div class="map">
+    <div class="side">実績・肩書き</div>
+    <div class="q danger"><p class="ql">第1象限 ⚠ 最大の激戦区 ｜ AIツール × 実績</p><p class="qn">AI実績系（24件）</p>
+      <div class="chips"><span class="chip">kemu_ai 2.5万</span><span class="chip">hataraku_writer 2.3万</span><span class="chip">furio_gpt 1.7万</span><span class="chip">asa_to_ame 1万</span><span class="chip">kopen_life_ai 9,788</span></div>
+      <p class="qd">100超の率の中央値3.2%。大型は多いが率は低い</p></div>
+    <div class="q"><p class="ql">第2象限 ｜ 働き方・稼ぎ方全般 × 実績</p><p class="qn">稼ぎ方の実績系（16件）</p>
+      <div class="chips"><span class="chip">saorin_buppan 2.1万</span><span class="chip">syuri_fun_life 1.8万</span><span class="chip">mishima_com 8,848</span><span class="chip">threads_shukyaku 8,734</span><span class="chip">rin.noter 4,096</span></div>
+      <p class="qd">直近100投稿あたりの100超は2.3本で4象限で最少</p></div>
+  </div>
+  <div class="map">
+    <div class="side">等身大の当事者</div>
+    <div class="q hot"><p class="ql">第3象限 ◎ 空いている席 ｜ AIツール × 当事者</p><p class="qn">AI挑戦ログ系（8件）</p>
+      <div class="chips"><span class="chip">akanee_ai 2,103</span><span class="chip">sumomo_ai_kouritsu 1,696</span><span class="chip">nakaaki__100days 1,202</span><span class="chip">ri.oh0423 711</span><span class="chip">so_lazy_labo 516</span></div>
+      <p class="qd">率の中央値25.4%と最高。なのに3回以上はmokumoku416_aiの1件だけ</p></div>
+    <div class="q"><p class="ql">第4象限 ○ 伸びている席 ｜ 働き方・稼ぎ方全般 × 当事者</p><p class="qn">働き方の当事者系（20件）</p>
+      <div class="chips"><span class="chip">maroko_workstyle 3,225</span><span class="chip">kabukurashuhu 2,770</span><span class="chip">kaba_buppanobachan 2,552</span><span class="chip">chiii_twins_st 818</span><span class="chip">sanaelife1975 726</span></div>
+      <p class="qd">100超35本で最多・率の中央値18.1%。ただし18本はmaroko_workstyle</p></div>
+  </div>
+  <div class="axis-lbl">▼ 等身大の当事者で信頼させる（パート・初心者・挑戦中）</div>
+</div>
+
+<h3>再収集でわかった3つのこと</h3>
+<div class="grid">
+  <div class="card bad"><h4>① AI実績系は数のわりに伸びていない</h4><p>①の24件は大型（1万〜2.5万）がそろうが、100超の率は中央値3.2%。直近で3回以上を出せたのはnaoto__ai・furio_gpt・kuroe_claude・shichannosabu2の4件。<b>同じ「プロンプト配布」「Claude Code活用術」が並び、同質化している。</b></p></div>
+  <div class="card hot"><h4>② 同じ名乗りで出し続ける当事者が最も安定</h4><p>maroko_workstyle（フォロワー3,225）は直近39本中<b>18本が100超</b>。ほぼ全部が「週4パート＆在宅ワークで働く45歳です。」等の同じ1行目で始まり、ツリーも導線もない短文。bioは「すごい人のすごいアカウントではなく普通の主婦の普通のアカウント」。</p></div>
+  <div class="card"><h4>③ 案件募集・即金系は伸びない</h4><p>9/8の調査で、即金・pay・日払い・高単価・副業案件はいいね100超の投稿がほぼ0件。伸びた「募集」は美容サロンの無料モニター募集など小規模で、稼ぐ系ノウハウとは別もの。</p></div>
+</div>
+
+<div class="quote">
+  <b>③の席はまだ空いている。</b>「非エンジニアがClaude Codeを学んで4ヶ月」「AI副業に挑戦して1週間」のような当事者の挑戦ログは率が高いのに、体系的に積み上げているのはmokumoku416_ai（フォロワー464）くらい。①の実績系と同じネタ（Claude Code・プロンプト）を、<b>当事者の目線と実数</b>で出す余地がある。
+</div>
+
+<h3>伸び投稿トップ10（いいね率順・フォロワー1,000人以上・1アカウント2本まで）</h3>
+<p class="note">ダイエット版はいいね数の順だったが、こちらはCLAUDE.mdの「伸びている」の定義（いいね率が主基準・いいね100以上）で並べた。ジャンル外の投稿は除外。</p>
+<div class="tw"><table><tr><th>率</th><th>いいね</th><th>アカウント（フォロワー）</th><th>型と内容</th></tr><tr><td class="n hi">55.4%</td><td class="n">1,535</td><td><a href="https://www.threads.com/@kabukurashuhu/post/DavDqjUktv2" target="_blank" rel="noopener">@kabukurashuhu</a>（2,770）</td><td>失敗談「キオクシア、損切りするか悩んでる人へ」— 自分の損切り後悔を①〜⑤の値動きで語る</td></tr><tr><td class="n hi">53.6%</td><td class="n">726</td><td><a href="https://www.threads.com/@lryo1/post/DWOVg6aj7QD" target="_blank" rel="noopener">@lryo1</a>（1,355）</td><td>作ってみた「構成・ナレーション・SE・動画すべて生成AIのみ」（動画1本）</td></tr><tr><td class="n hi">38.1%</td><td class="n">1,228</td><td><a href="https://www.threads.com/@maroko_workstyle/post/DaU5s1Yjp_z" target="_blank" rel="noopener">@maroko_workstyle</a>（3,225）</td><td>名乗り固定「在宅で『校正』の仕事をしている45歳です。」＋読者の疑問を代弁して終わる</td></tr><tr><td class="n">34.4%</td><td class="n">1,111</td><td><a href="https://www.threads.com/@maroko_workstyle/post/DZppS6Mk2iu" target="_blank" rel="noopener">@maroko_workstyle</a>（3,225）</td><td>近況「45歳、週4事務パート受かった。」— 3行だけ</td></tr><tr><td class="n">31.6%</td><td class="n">327</td><td><a href="https://www.threads.com/@pomechan43/post/DXZ8b7Fk19Y" target="_blank" rel="noopener">@pomechan43</a>（1,034）</td><td>配布（固定）「ココナラで毎月50ﾏﾝ安定してる方法」をオプチャで配信</td></tr><tr><td class="n">29.7%</td><td class="n">350</td><td><a href="https://www.threads.com/@yuigs_ai/post/DXf0vFaEawq" target="_blank" rel="noopener">@yuigs_ai</a>（1,178）</td><td>Tips（固定）「Claude Codeを始めた皆さん。トークン消費の可視化はまずやるべき」＋コピペ指示文</td></tr><tr><td class="n">20.2%</td><td class="n">256</td><td><a href="https://www.threads.com/@marikkadayo/post/DTA9Ae8lKD2" target="_blank" rel="noopener">@marikkadayo</a>（1,268）</td><td>自己紹介（固定）経歴の箇条書き → note</td></tr><tr><td class="n">11.8%</td><td class="n">2,173</td><td><a href="https://www.threads.com/@syuri_fun_life/post/DPFv85LCfP0" target="_blank" rel="noopener">@syuri_fun_life</a>（18,455）</td><td>断言「在宅で仕事をしたい人は、全員『Webライター』やったほうがいい」＋単価と探し方</td></tr><tr><td class="n">11.7%</td><td class="n">201</td><td><a href="https://www.threads.com/@neet_ai_creator/post/DeohyG-Fs99" target="_blank" rel="noopener">@neet_ai_creator</a>（1,721）</td><td>損訴求「塾行かせてる親御さんに…ChatGPTの『勉強モード』知らないと損」＋指示文ツリー</td></tr><tr><td class="n">11.7%</td><td class="n">130</td><td><a href="https://www.threads.com/@sugurukun_ai/post/Dc5Y8XXjvOb" target="_blank" rel="noopener">@sugurukun_ai</a>（1,114）</td><td>速報「GPT-6 Astraで、こんなローンチ動画まで作れてしまった」（動画）</td></tr></table></div>
+
+<h4>フォロワー1,000人未満で率が跳ねた投稿</h4>
+<ul class="plain">
+  <li><b>498.0%</b>（いいね732／フォロワー147）@nail____ai1110「個人事業主になった今、空白だらけのサロンボードを見ると手が震えるほど怖いです。」</li>
+  <li><b>461.1%</b>（いいね166／フォロワー36）@xr7ujuj「看護師で副業してる人って何してるの？」</li>
+  <li><b>418.5%</b>（いいね385／フォロワー92）@mao_eye.design「東京駅でアートメイクしたい方居ますか❓❓」</li>
+  <li><b>194.6%</b>（いいね572／フォロワー294）@nao_bihadasalon「このままだと潰れます…😭」</li>
+  <li><b>192.5%</b>（いいね308／フォロワー160）@kaho_pta_home「PTA役員やってる在宅母ちゃんのリアル月収発表‼️」</li>
+  <li><b>136.7%</b>（いいね227／フォロワー166）@beomglobal_jp「もうすぐ韓国の飲食店PR案件をたくさん募集する予定です🍽️✨」</li>
+  <li>小さいアカウントの率上位は、ほぼすべて<b>弱音・挙手・実録</b>（「このままだと潰れます」「看護師で副業してる人って何してるの？」「リアル月収発表」）。ノウハウではなく本人の状況がフォロワー外まで届いている</li>
+</ul>
+
+<h2 class="serif" id="keywords"><span class="no">3</span>キーワード</h2>
+
+<h3>検索ワードの判定（9月のThreads検索・いいね100超が出たか）</h3>
+<p class="note">9/7〜8に試した約60ワードの結果。Threads検索は<b>スペースを入れると0件</b>になる（「副業 稼ぐ」は不可、「副業稼ぐ」か単語単発なら可）。</p>
+<div class="tw"><table>
+  <tr><th>判定</th><th>ワード</th><th>備考</th></tr>
+  <tr><td><span class="badge">◎</span></td><td><b>ココナラ ／ Claude Code ／ クロード ／ AI画像 ／ スレッズ運用 ／ パート辞めたい</b></td><td>稼ぐ系ど真ん中の新規候補がまとめて取れた（oz_net_biz・n_ai.gpt・pomechan43・osabori_claudecode0・shiomaru86 など）</td></tr>
+  <tr><td><span class="badge gray">○</span></td><td>AI副業 ／ 生成AI ／ ChatGPT活用 ／ AIツール ／ プロンプト ／ 副業 ／ 副業初心者 ／ 副業収入 ／ 収益化 ／ コンテンツ販売 ／ 電子書籍 ／ ブログ収益 ／ Webライター ／ 動画編集 ／ フリーランス ／ 物販 ／ アフィリエイト ／ 在宅ワーク ／ インスタ運用 ／ ローンチ</td><td>候補は取れた。ローンチは政治・英語のノイズ混在</td></tr>
+  <tr><td><span class="badge red">△</span></td><td>Threads運用 ／ Brain ／ Gemini ／ インスタ ／ 情報発信 ／ 案件 ／ 高収入</td><td>ノイズが多い（株アカウント・英単語brain・双子座占い・個人誘導・旅行・ドラマや事件・探している消費者側）</td></tr>
+  <tr><td><span class="badge red">×</span></td><td>マネタイズ ／ せどり ／ Kindle出版 ／ ステップ配信 ／ スキルシェア ／ note ／ 即金 ／ ペイ ／ 日払い ／ 高単価 ／ 副業案件 ／ 動画編集者募集</td><td>0件、または100超の投稿がほぼ無い</td></tr>
+</table></div>
+
+<h3>伸び投稿に多い語（100超・ジャンル内77件 vs 100未満）</h3>
+<p class="note">投稿本文＋ツリーにその語が出た投稿の割合。カッコ内は100未満の投稿での割合。オレンジは100超で2倍以上多い語。</p>
+<div class="kws"><span class="kw">AI 26%（19%）</span><span class="kw star">在宅 26%（2%）</span><span class="kw star">◯歳 26%（4%）</span><span class="kw star">Claude 23%（12%）</span><span class="kw star">Claude Code 19%（7%）</span><span class="kw">無料 19%（16%）</span><span class="kw">月収・月◯万 17%（12%）</span><span class="kw">ChatGPT 16%（9%）</span><span class="kw star">年収・年◯ 16%（2%）</span><span class="kw star">パート 14%（2%）</span><span class="kw star">受け取り 14%（4%）</span><span class="kw star">プロンプト 13%（6%）</span><span class="kw star">◯選・◯個 12%（4%）</span><span class="kw star">〜な人いる？ 10%（4%）</span></div>
+<ul class="plain" style="margin-top:14px">
+  <li><b>「在宅」「◯歳」「パート」は100超で6〜11倍</b> — ただし半分以上はmaroko_workstyle1件の連投（同じ名乗り）。語そのものより「名乗りを固定する」書き方の効果とみるのが妥当</li>
+  <li><b>「Claude Code」は100超の19%（9アカウント）・100未満は7%</b> — ChatGPT（16%）より伸び投稿での比率が高い。2026年秋の旬のツール名</li>
+  <li><b>「無料」は100超19%・100未満16%でほぼ差がない</b> — 無料配布は当たり前になっていて、それだけでは伸びない</li>
+  <li><b>「質問・教えて」は逆に100未満のほうが多い</b>（6%対9%）— 「教えて」と聞くより「〜な人いる？」と挙手させるほうが伸びる</li>
+</ul>
+
+<h3>顧客語彙ハイライト（伸び投稿から抜き出した実在の言い回し）</h3>
+<p class="note">すべて100超投稿・表示名・bioに実際に出てきた語。オレンジは繰り返し出てきた、または率の高い投稿の語。</p>
+<div class="kwbox hot"><div class="kwh"><span class="badge">A</span><span class="t">金額・実績の数字</span><span class="w">内訳や1円単位まで出すと強い</span></div>
+<div class="kws"><span class="kw star">合計 781,000（内訳5項目）</span><span class="kw star">2ヶ月で【¥925,231】</span><span class="kw star">毎月50ﾏﾝ</span><span class="kw">月600ﾏｿ</span><span class="kw">年4,000ﾏｿ</span><span class="kw">月収300万</span><span class="kw">月収は400万円</span><span class="kw">1本3000円〜2万円</span><span class="kw">外注費3万がかからなくなった</span></div></div>
+<div class="kwbox"><div class="kwh"><span class="badge gray">B</span><span class="t">ツール・場所の固有名詞</span><span class="w">検索の入口。1投稿1つ</span></div>
+<div class="kws"><span class="kw star">Claude Code</span><span class="kw star">ChatGPT（チャッピー）</span><span class="kw">Gemini</span><span class="kw">Codex</span><span class="kw star">ココナラ</span><span class="kw">クラウドワークス</span><span class="kw">楽天ROOM</span><span class="kw">note</span><span class="kw">オプチャ</span><span class="kw">校正プロダクション</span></div></div>
+<div class="kwbox hot"><div class="kwh"><span class="badge">C</span><span class="t">属性・ライフステージ</span><span class="w">1行目の名乗りに使う</span></div>
+<div class="kws"><span class="kw star">週4パート（社保加入）＆在宅ワークで働く45歳</span><span class="kw star">PTA役員やってる在宅母ちゃん</span><span class="kw star">4歳の双子を育てる40代のママ</span><span class="kw">非エンジニア</span><span class="kw">年収280万の配達員を退職</span><span class="kw">50代でもできた</span><span class="kw">40代からの挑戦</span><span class="kw">看護師で副業</span><span class="kw">AM3時半から働く3児ママ</span></div></div>
+<div class="kwbox"><div class="kwh"><span class="badge gray">D</span><span class="t">働き方・場所の情景</span><span class="w">数字より自分ごと化される</span></div>
+<div class="kws"><span class="kw star">家から一歩も出ずに</span><span class="kw star">コメダで自由にコーヒー飲みながら</span><span class="kw star">22:30。家族が寝ました。</span><span class="kw">会社に出勤しなくても</span></div></div>
+<div class="kwbox"><div class="kwh"><span class="badge gray">E</span><span class="t">配布物の呼び名</span><span class="w">固定投稿の主役</span></div>
+<div class="kws"><span class="kw">325人が0→1を達成した極プロンプト集</span><span class="kw">AI活用スタートガイド</span><span class="kw">シーン別最強プロンプト77選</span><span class="kw">解説記事（6,000文字）</span><span class="kw">Webライターを0から学べる無料note</span></div></div>
+<div class="kwbox hot"><div class="kwh"><span class="badge">F</span><span class="t">警告・煽り</span><span class="w">①の実績系の定番フック</span></div>
+<div class="kws"><span class="kw star">ガチで危険！</span><span class="kw star">性能を9割損してます</span><span class="kw">AI使ったのバレバレ</span><span class="kw">絶対手を出すな</span><span class="kw">違法っぽいけど合法</span><span class="kw">炎上覚悟です</span><span class="kw">AI弱者</span></div></div>
+<div class="kwbox hot"><div class="kwh"><span class="badge">G</span><span class="t">弱音・共感</span><span class="w">小さいアカウントで率が跳ねる語</span></div>
+<div class="kws"><span class="kw star">このままだと潰れます</span><span class="kw star">今月まだ予約ゼロ</span><span class="kw">自分がやっていることが合っているのか分からなくなってしまう</span><span class="kw">売り上げ未だなし</span><span class="kw">同じ気持ちの人、いませんか？</span></div></div>
+
+<h2 class="serif" id="types"><span class="no">4</span>投稿の型</h2>
+<p class="note">100超投稿のうち稼ぐ系の中身の77件を、本文＋ツリーまで読んで分類した。各型の実例は全文引用（ツリーも全部）。ダイエット版と同じく、使うときは語句ではなく構造だけを借りる。</p>
+
+<h3>伸びている9型（各型の実例・全文引用）</h3>
+
+<div class="post">
+  <div class="post-h"><span class="n">壱</span><span><b>損・警告型（「◯◯してる人、損してます」）</b></span><span class="r"><a href="https://www.threads.com/@naoto__ai/post/DZyi1BCk2uo" target="_blank" rel="noopener" style="color:inherit">@naoto__ai・いいね414（フォロワー4,665／率8.9%）</a></span></div>
+  <div class="post-b">ガチで危険！Geminiを初期設定で使っている人、情報漏洩してます。初期設定だと、入力した内容がサービス改善やAIモデルの学習に使われる仕組みになっています。デフォルトのまま使っている人は、今すぐ設定を変えてください↓</div>
+  <div class="post-b sub">【自己返信・2つ目・いいね124】
+【PCの場合】
+①左下の設定（歯車マーク）を選択
+②「アクティビティ」を選択
+③アクティビティの保存を「オフ」にする
+
+【スマホアプリの場合】
+①右上のプロフィールアイコンを選択
+②「Googleアカウントを管理」を選択
+③「データとプライバシー」を選択
+④「ウェブとアプリのアクティビティ」を選択
+⑤「ウェブとアプリのアクティビティ」の横にある「オフにする」ボタンを選択
+⑥確認画面が表示されるので、下までスクロールして「理解した」を選択
+
+これをすれば会話履歴が保存されなくなります。
+そして、学習されないからといって、
+・本名
+・自宅や勤務先の所在地
+・連絡先の電話番号
+・メールアドレス
+などの個人情報を入力するのは絶対にやめましょう。もしすでに入力してしまっている人は、下記の手順で削除するように！（過去のトーク履歴も削除されます）</div>
+  <div class="post-b sub">【自己返信・3つ目・いいね52】
+【PCの場合】
+①左下の設定（歯車マーク）を選択
+②「アクティビティ」を選択
+③「○か月以上経過したアクティビティを削除します」を選択
+④削除したい期間を選択して削除
+
+【スマホアプリの場合】
+①右上のプロフィールアイコンを選択
+②「Googleアカウントを管理」を選択
+③「データとプライバシー」を選択
+④「ウェブとアプリのアクティビティ」を選択
+⑤「○か月以上経過したアクティビティを削除します」を選択
+⑥削除したい期間を選択して削除
+
+これで履歴も削除することができます。Geminiだけでなく、他のAIツールからも情報漏洩することがあるので、ぜひ気をつけて利用してくださいね。
+
+AIに興味がある方は、プロフの固定からThreadsで書ききれない有益情報を発信するオープンチャットがありますので、そちらからご参加ください！
+また、フォローもお忘れなく！！</div>
+  <div class="post-cap">1行目で「危険」「情報漏洩」と損を突きつけ、本文の最後で「↓」とツリーへ送る。2つ目・3つ目は<b>画面どおりの操作手順だけ</b>で、最後にオプチャへ。同型に「ChatGPTに『〜して』って指示している人、性能を9割損してます」（同アカウント2本）、「塾行かせてる親御さんに…勉強モード知らないと本当に損」（@neet_ai_creator 率11.7%）。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">弐</span><span><b>使う／使わない 二択リスト型</b></span><span class="r"><a href="https://www.threads.com/@shiomaru86/post/DeEKDHqCe9J" target="_blank" rel="noopener" style="color:inherit">@shiomaru86・いいね372（フォロワー7,617／率4.9%）</a></span></div>
+  <div class="post-b">AIで一人会社を作ったら
+2ヶ月で【¥925,231】発生した私が断言します。
+
+🙅‍♀️使わない方がいいAI
+・Gemini
+・Copilot
+・Midjourney
+・Kling
+・Veo
+
+🔥使うべきAIはこっち↓</div>
+  <div class="post-b sub">【自己返信・2つ目・いいね108】
+・Claude Code
+うちの会社の本体です。フォルダに役割と判断基準を書いたファイルを置いて読ませると、分析→投稿作成→検品まで任せて放置できます。教えたことがファイルに残るので、使うほど育ちます。
+・ChatGPT
+画像・図解の製造担当。投稿に貼る素材はここで量産してます。
+・Higgsfield
+動画の製造担当。リールの素材は全部ここです。
+・Codex
+開発担当。必要な道具を日本語の指示で作ってもらってます。
+この4つで会社を回す仕組みは、プロフィールのリンクから丸ごと受け取れます。取ってから読み進めると今日から動けます🔥</div>
+  <div class="post-b sub">【自己返信・3つ目・いいね15】
+で、ここから本題です。大事なのはAIの優劣じゃなくて、業務に合うAIを選ぶことです。
+❌に入れた5つも、性能が低いわけじゃないです。「SNSで売上げる」という業務に合わなかっただけです。
+多くの人はAIを先に契約して、それから使い道を探します。順番が逆です。業務を先に決めて、その業務に合うAIを選ぶ。ここを逆にしたまま課金してる人が本当に多いです。私もそうでした。
+5つがなぜ合わなかったか、順番に書きます。</div>
+  <div class="post-b sub">【自己返信・4つ目・いいね10】
+❌Gemini｜リサーチの精度が低い
+調べ物を任せると、嘘が混ざります。それっぽい顔で間違った数字を出してくるので、確認の作業が消えません。
+SNSは事実と数字が命です。投稿に嘘が1個混ざるだけでコメント欄で崩れるので、「確認が必要なリサーチ」は仕事を減らすどころか増やします。</div>
+  <div class="post-cap">「使わない方がいい5つ」を先に並べ、「使うべきはこっち↓」で切る。<b>答えは2つ目まで出さない</b>。3つ目以降で「なぜ合わなかったか」を1つずつ説明して読み進めさせる。同型に「絶対手を出すな『NGフク業』→⭕️マジでセンスある↓」（@furio_gpt）、「月収300万いったけど…不要なことだけまとめとく」（@shichannosabu2 率32.2%）。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">参</span><span><b>保存版リスト型（場所・ツールを数で並べる）</b></span><span class="r"><a href="https://www.threads.com/@furio_gpt/post/DekSqSBCN1S" target="_blank" rel="noopener" style="color:inherit">@furio_gpt・いいね435（フォロワー16,623／率2.6%）</a></span></div>
+  <div class="post-b">案件を探す場所、「クラウドワークス」「ランサーズ」「ココナラ」しか知らない人が多すぎる。
+在宅で仕事を受けられる場所、実はこんなにあります。月600ﾏｿ頂く僕は、この18個を見るので。</div>
+  <div class="post-b sub">【自己返信・2つ目・いいね119】
+まず一番基本。すでにある案件を探すプラットフォーム。
+
+①シュフティ：在宅ワーク系。初心者でも探しやすい。
+②クラウディア：ライティング、デザイン、事務まで幅広い。
+③ママワークス：在宅の求人を探したい人向け。
+④しゅふJOB：在宅や時短の仕事が見つかる。
+⑤複業クラウド：経験やスキルを活かせる複業案件。
+⑥Workship：複業・フリーランス向けの案件。
+⑦SOKUDAN：業務委託や複業の案件を探せる。
+⑧Anycrew：マーケ、営業、企画、ライターなど幅広い。
+
+クラウドワークスだけ覗いて「案件ない」で終わらせるのは、マジで勿体無い。見にいく場所を変えれば、戦う相手も変わります。
+
+次に、自分の商品を置いておく場所↓</div>
+  <div class="post-b sub">【自己返信・3つ目・いいね54】
+⑨タイムチケット：自分の知識や時間を商品にする。
+⑩ストアカ：得意なことを講座にして売る。
+⑪MENTA：相談やサポートをサービスの形にする。
+⑫note：実績やノウハウを書いて、問い合わせにつなげる。
+
+実は案件って、募集に応募するだけのものじゃないです。「私はこれができます」を置いておけば、向こうから見つけてもらうルートも作れます。
+
+そして海外。ここまで見にいく人は、マジでいない↓</div>
+  <div class="post-b sub">【自己返信・4つ目・いいね52】
+⑬Upwork：世界中のクライアント案件を探せる。
+⑭Fiverr：自分のサービスを出品して海外へ売る。
+⑮Freelancer.com：世界中の案件へ提案できる。
+
+AI翻訳がここまで来ている今、「英語が苦手だから海外は無理」と最初から切り捨てるのは、正直もったいないです。AIを使うだけで、海外のお仕事でもとって来れます。ぜひ参考にしてください！
+
+そしてここまで見てくれた方には、30分のスキマ時間でも在宅ワークができるように、AIへの指示文（プロンプト）を収録した「325人が0→1を達成した極プロンプト集」を無料配布します！
+
+スライド作成、画像生成、企画書作成、分析、SNS投稿作成など、AIで自動化して制作物を作れる4,000以上のプロンプトをまとめています。
+
+・ 僕自身も毎日使って年3,000
+・発明後、3ヶ月で月300を達成
+・累計325名が0→1突破を実現
+これだけの成果を生み出してきたプロンプトです。
+
+今は無料ですが、有料に切り替えるかもしれないので、早めに受け取っておいてください！
+
+受け取り方法は固定投稿にまとめています！</div>
+  <div class="post-cap">「◯◯しか知らない人が多すぎる」で読者の知識不足を指摘し、「この18個を見る」と数を予告。ツリーを「探す場所→自分の商品を置く場所→海外」の3段に分け、各段の終わりに一言の意見を挟む。最後は配布物（プロンプト集）へ。番号予告の変形に「違法っぽいけど合法なClaude Code仕事丸投げ術15選。特に14番目…」（@kuroe_claude）。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">四</span><span><b>名乗り固定×1テーマ短文型</b></span><span class="r"><a href="https://www.threads.com/@maroko_workstyle/post/DaU5s1Yjp_z" target="_blank" rel="noopener" style="color:inherit">@maroko_workstyle・いいね1,228（フォロワー3,225／率38.1%）</a></span></div>
+  <div class="post-b">在宅で「校正」の仕事をしている45歳です。
+
+校正の仕事に興味はあるけれど、実際にどうすれば校正の仕事をもらえるようになるのかわからない、知りたいな〜
+
+っていうかた、意外といらっしゃるような気がする…。</div>
+  <div class="post-cap"><b>1行目が毎回ほぼ同じ名乗り</b>（「在宅で『校正』の仕事をしている45歳です。」「週4パート＆在宅ワークで働く45歳です。」）。2行目以降は1テーマだけ、ツリーなし・リンクなし。このアカウントは直近39本中18本が100超で、調査対象で最も安定。読者の疑問を代弁して終わり、答えは次の投稿に回す。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">五</span><span><b>リアル月収発表型（内訳まで出す）</b></span><span class="r"><a href="https://www.threads.com/@kaho_pta_home/post/Dc72I8CCUb1" target="_blank" rel="noopener" style="color:inherit">@kaho_pta_home・いいね308（フォロワー160／率192.5%）</a></span></div>
+  <div class="post-b">PTA役員やってる在宅母ちゃんのリアル月収発表‼️
+( 今月はデキスギ🤩🤩🤩 )
+　
+①在宅の事務代行 108,000
+②オンラインアシスタント 57,000
+③問い合わせ対応 134,000
+④その他雑収入 19,000 (おまけ的なの)
+⑤ながら見代行 463,000 ←🤩
+　
+合計 781,000
+￣￣￣￣￣￣￣
+　
+見たことない金額で文句なしの過去最高🤩🤩🤩
+よくやったワタシ‼️‼️‼️
+　
+②のオンラインアシスタントの中に
+・スケジュール管理
+・資料まとめ が込み込み
+　
+パートしかしたことない在宅ワーク3年目女の快挙でございます🤩‼️
+　
+口が悪い投稿ばっかりのアカウントですが
+スキルゼロから在宅ワーク頑張りたい人は
+仲良くしてね🤝🫩❤️‍🔥</div>
+  <div class="post-cap">「リアル月収発表‼️」の宣言→仕事ごとの金額を①〜⑤で並べて合計を出す。最後に「パートしかしたことない在宅ワーク3年目」と自分の素性を明かし、「スキルゼロから在宅ワーク頑張りたい人は仲良くしてね」で締める。フォロワー160で率192.5%。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">六</span><span><b>弱音・挙手型（仲間を求める）</b></span><span class="r"><a href="https://www.threads.com/@nao_bihadasalon/post/Da4rkq_k-kz" target="_blank" rel="noopener" style="color:inherit">@nao_bihadasalon・いいね572（フォロワー294／率194.6%）</a></span></div>
+  <div class="post-b">このままだと潰れます…😭
+
+念願の美容サロンを開いたのですが、まだぜんぜん集客できていません💦
+
+毎月赤字が続いていて、ヤバいです🥲
+
+立ち上げだから踏ん張るしかないのか...
+
+1人でも多くの方に施術ができるように頑張りますので、応援のほど、よろしくお願いします🙇‍♀️</div>
+  <div class="post-cap">困っている現状だけを書いて「応援よろしく」「同じ気持ちの方いますか？」で終わる。ノウハウはゼロ。このアカウントは同じ型だけで直近7本が100超（すべてツリーなし）。同型に「AI副業に挑戦して1週間。正直、合っているのか分からなくなってしまう。同じ気持ちの人、いませんか？」（@ojisan_meets_ai 率102.7%・コメント59）。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">七</span><span><b>失敗談で寄り添う型</b></span><span class="r"><a href="https://www.threads.com/@kabukurashuhu/post/DavDqjUktv2" target="_blank" rel="noopener" style="color:inherit">@kabukurashuhu・いいね1,535（フォロワー2,770／率55.4%）</a></span></div>
+  <div class="post-b">キオクシア、損切りするか悩んでる人へ
+
+半導体の大先輩、東京エレクトロンを例に出すね。(数字は写真の番号です)
+
+①2024年4月、最高値の4万で買った。
+②8月には2万台に。半分だけど…巨額すぎて損切りできない
+③2025年4月、ちょうど一年後には16000円に。流石に現物でも…これは無理だメンタル崩壊
+④2026年1月、ついに4万台回復！
+⑤そして6月には8万円！！！一生一緒に東京エレクトロン！
+
+他にもレーザーテック、アドバンテスト…なんでもいいです。チャートみて想像してみてください。
+これと同じことが起きると想定したら、あなたはどのタイミングで損切りしてしまいますか？騰がると信じて⑤まで辿り着けた人は何%でしょうか？
+
+③が訪れたら無理だ、だから②のうちに今すぐ損切り、も正解。
+
+ホールドも正解。東エレは2年かかったけど、キオクシアは2ヶ月で戻すかもしれない。一年後には⑤まで辿り着けるかもしれない。
+
+SNSの言葉に惑わされず、どうか自分で決断を。そして疲れたらぐっすり眠るのも大事🤍何のために株を始めたのか、初心を思い出して、これで辛い思いをしてしまうのは本末転倒だよ🥹🤍</div>
+  <div class="post-b sub">【自己返信・2つ目・いいね66】
+反響大きくDMも沢山来るので追記情報です🌻
+
+⚠️この投稿でホールドを推奨してるわけではありません！
+私は③で損切りしたのを後悔してるんです。まだキオクシアは半値になってないから②と③が訪れてないけど、いまは下降トレンドで可能性あると思ってます。③がきて慌てふためくくらいなら、今のうちに損切りする方がマシだよ、と伝えてます。
+
+でも、ホールドするなら2年後、5年後に戻る可能性もゼロじゃないよ、という例です！もちろん日経みたいに、30年後に3万回復、みたいな可能性もあるからね！投資は自己判断で！
+
+⚠️あくまで投資判断でのメンタルの話なので、東エレと同じ動きするよ！とは言ってません！
+
+SNS難しいな😇変に解釈して攻撃コメントする人は全員ブロックしてますごめんね😇🤍</div>
+  <div class="post-cap">「◯◯で悩んでる人へ」と呼びかけ、<b>自分の失敗（損切りの後悔）を時系列の数字で</b>見せる。どちらの選択も「正解」と言って読者を責めない。反響を受けてツリーに「推奨しているわけではありません」と追記している。投資系はこの型が率55.4%で最大。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">八</span><span><b>作ってみた報告型（初心者の到達点）</b></span><span class="r"><a href="https://www.threads.com/@mokumoku416_ai/post/DcH6G9DHaTh" target="_blank" rel="noopener" style="color:inherit">@mokumoku416_ai・いいね513（フォロワー464／率110.6%）</a></span></div>
+  <div class="post-b">Claude Codeで作りたかったやつーー🔥
+無添加アプリ作った😂🍔🍚🍞
+無添加調味料などの一覧と、買い物メモ、
+成分検索とかできる✌️</div>
+  <div class="post-cap">「Claude Codeで作りたかったやつ」と、作ったもの（アプリ）を画像で見せるだけ。同アカウントの「Claude Code 5日目にしてオリジナル家計簿」「非エンジニアがClaude Codeを学んで4ヶ月」も100超で、ツリーでスクールへつなぐ。同型に「構成、ナレーション、SE、動画全て生成AIのみで作りました」（@lryo1 率53.6%）。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">九</span><span><b>速報・制度ニュース型</b></span><span class="r"><a href="https://www.threads.com/@sugurukun_ai/post/Dc78pPVG9lZ" target="_blank" rel="noopener" style="color:inherit">@sugurukun_ai・いいね109（フォロワー1,114／率9.8%）</a></span></div>
+  <div class="post-b">え、Claudeのサブスク料金、IT導入補助金の対象になるのか！！
+ㅤ
+中小企業庁監督の「デジタル化・AI導入補助金2026」に選ばれていて、
+ㅤ
+・対象者：中小企業・小規模事業者等
+・補助率：1/2以内（要件を満たすと2/3以内）
+・補助額：5万円以上〜450万円以下（導入する業務プロセス数で変動）
+・クラウド利用料：最大2年分が補助対象
+・導入研修・活用コンサル・保守サポートの費用も「役務」として対象
+・直近の締切：9月29日（火）17:00／交付決定は11月9日（予定）
+ㅤ
+ポイントは、Claude単体で申請するのではなく「IT導入支援事業者が登録したITツール」として申請する形なところ。実際にこの枠でClaudeを入れて採択された中小企業も出てきてる。
+ㅤ
+申請の流れと、事故りやすい注意点はスレで👇🧵</div>
+  <div class="post-b sub">【自己返信・2つ目・いいね3】
+個人的に大きいと思うのは、対象経費の広さです！！！
+ㅤ
+・ソフトウェア購入費、クラウド利用料（最大2年分）
+・オプション：機能拡張、データ連携ツール、セキュリティ
+・役務：導入コンサル・活用コンサル、導入設定・導入研修、保守サポート
+ㅤ
+つまり「ツール代だけ補助するので、使い方は自分で覚えてね」ではなく、社内に定着させるための研修や伴走の費用まで一緒に申請できる設計。
+ㅤ
+AI導入が続かない会社の大半はツール代ではなく定着で詰まるので、正直ここまで対象なのは実態に合ってる</div>
+  <div class="post-b sub">【自己返信・3つ目】
+ただし注意点が4つ
+ㅤ
+1. 交付決定より前に契約・導入したものは補助対象外（フライング契約が一番多い事故）
+2. Claude単体で申請するのではなく、IT導入支援事業者が登録したITツールとして申請する
+3. 補助率2/3が使えるのは、最低賃金に近い水準で雇用する従業員が全従業員の3割以上いる場合などの要件あり
+4. 研修向けの「人材開発支援助成金」とは別制度なので混同しない
+ㅤ
+直近の5次締切は9月29日（火）17:00、交付決定は11月9日（予定）。
+事業実施期間は交付決定から2027年4月30日まで。
+ㅤ
+検討するなら、まず公式の「ITツール検索」で使いたいツールが登録されているかを確認するところから</div>
+  <div class="post-b sub">【自己返信・4つ目】
+うちも全社の仕事の8割をClaude Codeに任せてる側なので、毎月のAI利用料が経営コストとして無視できないのは実感がある...（ただMaxは対象じゃないみたい）
+ㅤ
+その固定費に国の補助が付き得るなら、「高いから見送り」でAI導入を止めてた会社こそ検討する価値がある。
+ㅤ
+いやこれ、AI導入のハードルが下がる流れが制度側からも来てるんだな...と</div>
+  <div class="post-cap">「え、◯◯なのか！！」の驚きで入り、条件を箇条書きで整理、「申請の流れと注意点はスレで👇🧵」とツリーへ。ツリーは「良い点→注意点4つ→自分の実感」の順。新モデル・新機能の速報（「GPT-6 Astraで、こんなローンチ動画まで」率11.7%）も同じ枠。</div>
+</div>
+
+
+<h3>伸びていても参考にしない・注意する型</h3>
+<div class="grid">
+  <div class="card bad"><h4>実績数字が揺れる配布型</h4><p>同じ配布物の紹介で、固定投稿は「僕自身年4,000ﾏｿ」、ツリーでは「年3,000」、収録数も「4,000以上」「4,500以上」と投稿ごとに違う（@furio_gpt）。<b>根拠を出せない数字は使わない</b>（ダイエット版の表現の安全基準と同じ。景表法の優良誤認にも触れやすい）。</p></div>
+  <div class="card bad"><h4>ジャンル外のバズ</h4><p>AI画像アカウントの一言ミーム（いいね8,311／フォロワー130）、美容モニター募集アカウントのメイク投稿（1,552）、集客アカウントの移住ネタ（1,236）など。<b>率は高くても稼ぐ系の読者は集まらない</b>ので参考元にしない（本ページの率計算からも除外）。</p></div>
+  <div class="card bad"><h4>「無料企画」の名乗り</h4><p>ダイエット版では禁止型。稼ぐ系では固定投稿の主流（「【無料企画】」@hataraku_writer 570）だが、通常投稿では「無料」が入っても伸び方は変わらない（100超19%／100未満16%）。<b>固定の1本に限る</b>のが妥当。</p></div>
+</div>
+
+<h3>ツリーの3構造</h3>
+<div class="quote">
+  <b>伸び投稿77件のうちツリー付きは29件。</b>リンクを1つ目の本文に置いたのは2件だけで、8件はツリー側に置いている。1つ目はフック、本体と導線はツリーへ——ダイエット版で確認した構造と同じ。
+</div>
+<div class="grid">
+  <div class="card hot"><h4>① フック＋本体ツリー型</h4><p>1つ目は損・二択・数の予告だけ。2つ目以降に手順・リスト・理由を番号で出し、最後のツリーで配布物や固定投稿へ（@furio_gpt・@shiomaru86・@naoto__ai・@kemu_ai）。①の実績系はほぼこれ。</p></div>
+  <div class="card hot"><h4>② 単発・短文型</h4><p>ツリーなしの1〜10行。中身は名乗り＋1テーマ、または弱音・挙手。会話はコメント欄で起きる（@maroko_workstyle・@nao_bihadasalon・@kaho_pta_home）。率が高いのはこちら。</p></div>
+  <div class="card"><h4>③ 配布予告ツリー型</h4><p>「解説記事を作ったんですが欲しい人いますか？受け取り方法は、」で切り、2つ目にリンク（@kuroe_claude・@osabori_claudecode0・@pomechan43）。固定投稿に多い（→ 7章）。</p></div>
+</div>
+
+<h3>伸び投稿に共通する書き方</h3>
+<div class="grid">
+  <div class="card hot"><h4>1行目で「誰が・誰に」を言う</h4><p>「在宅で校正の仕事をしている45歳です」「キオクシア、損切りするか悩んでる人へ」「塾行かせてる親御さんに」。<b>書き手か読み手のどちらかを1行目で特定</b>している。</p></div>
+  <div class="card hot"><h4>数字は内訳と端数まで</h4><p>「合計781,000（①〜⑤の内訳）」（率192.5%）「¥925,231」「1本3000円〜2万円」。丸めた「月◯万」より具体的で、作り話に見えにくい。</p></div>
+  <div class="card hot"><h4>手順はそのままコピペできる形</h4><p>設定画面の操作順（Gemini）、指示文の全文（勉強モード・プロンプト5個）、コマンド（/advisor）。<b>読んだその場で試せる形</b>で置いている（壱・九の型や、プロンプト5個を並べた @akanee_ai 242 はすべてこの形）。</p></div>
+</div>
+
+<h2 class="serif" id="watch"><span class="no">5</span>監視アカウント68件と優先候補</h2>
+<p class="note">10/21実測。フォロワーは収集時点、「直近投稿」は取得できた投稿数（1アカウント最大40件・ツリーの続きは本体に合体）、「率」は最大いいね÷フォロワー。</p>
+
+<h3>優先候補: 稼ぐ系の中身で100超を3回以上出した8件</h3>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>100超／直近</th><th>最大いいね（率）</th><th>学ぶこと</th></tr><tr><td><b><a href="https://www.threads.com/@maroko_workstyle" target="_blank" rel="noopener">@maroko_workstyle</a></b></td><td class="n">3,225</td><td class="n hi">18／39本</td><td class="n">1,228（38.1%）</td><td>名乗り固定×1テーマ短文。ツリーも導線もなしで最も安定（「スクール勧誘も案件紹介もしてません」と明言）</td></tr><tr><td><b><a href="https://www.threads.com/@furio_gpt" target="_blank" rel="noopener">@furio_gpt</a></b></td><td class="n">16,623</td><td class="n hi">5／13本</td><td class="n">1,423（8.6%）</td><td>損・二択・数の予告のフック→ツリーで本体→伸びた5本すべてが同じ配布物（極プロンプト集）に収束</td></tr><tr><td><b><a href="https://www.threads.com/@naoto__ai" target="_blank" rel="noopener">@naoto__ai</a></b></td><td class="n">4,665</td><td class="n hi">3／12本</td><td class="n">414（8.9%）</td><td>警告型（Gemini初期設定で情報漏洩）＋画面どおりの手順ツリー→オプチャ</td></tr><tr><td><b><a href="https://www.threads.com/@kuroe_claude" target="_blank" rel="noopener">@kuroe_claude</a></b></td><td class="n">9,315</td><td class="n hi">3／19本</td><td class="n">297（3.2%）</td><td>「違法っぽいけど合法」「特に14番目」の番号予告。配布予告ツリーの固定</td></tr><tr><td><b><a href="https://www.threads.com/@mokumoku416_ai" target="_blank" rel="noopener">@mokumoku416_ai</a></b></td><td class="n">464</td><td class="n hi">3／29本</td><td class="n">513（110.6%）</td><td>非エンジニアのClaude Code成果物報告（5日目・4ヶ月）→スクール導線。③の席の唯一の安定アカウント</td></tr><tr><td><b><a href="https://www.threads.com/@shichannosabu2" target="_blank" rel="noopener">@shichannosabu2</a></b></td><td class="n">401</td><td class="n hi">3／27本</td><td class="n">183（45.6%）</td><td>「チャッピーだけで十分です」の逆張り＋「月収300万いったけど質問ある？」。コメントが多い</td></tr><tr><td><b><a href="https://www.threads.com/@nao_bihadasalon" target="_blank" rel="noopener">@nao_bihadasalon</a></b></td><td class="n">294</td><td class="n hi">7／20本</td><td class="n">572（194.6%）</td><td>集客の弱音・挙手だけで7本（すべて単発）。小規模でも率が跳ねる型の見本</td></tr><tr><td><b><a href="https://www.threads.com/@mishima_com" target="_blank" rel="noopener">@mishima_com</a></b></td><td class="n">8,848</td><td class="n hi">3／37本</td><td class="n">161（1.8%）</td><td>サロン経営者向けのマインド長文と自己ツッコミ（「どうだ、きもいやろ！」）</td></tr></table></div>
+<p class="note">ほかに直近で3回以上を出したのは @book_meyer（書評）・@mao_eye.design（メイク）・@aibijo_images_creator（ミーム）・@rei_handmade.accessory（作品紹介）・@threads_shukyaku（最大は移住ネタ）で、伸びた投稿の中身が稼ぐ系ではないため優先候補から外した。</p>
+
+<h3>運用フロー（ダイエット版と共通）: 巡回 → 実物トレース</h3>
+<div class="flow">
+  <div class="step"><p class="fn">一</p><b>巡回</b><p>優先候補の新着を、いいね率といいね100の下限で拾う</p></div>
+  <div class="step"><p class="fn">二</p><b>実物を開く</b><p>本文の全文＋ツリー＋コメント欄上位まで読む（冒頭だけの参照は禁止）</p></div>
+  <div class="step"><p class="fn">三</p><b>トレース生成</b><p>1行目のフック構造・分割位置だけを借りて、自分の実話に載せ替える</p></div>
+  <div class="step"><p class="fn">四</p><b>オーナー承認</b><p>サンプルで合格した型だけを予約投稿に回す</p></div>
+</div>
+
+<h3>全68件の一覧（ジャンル大枠ごと）</h3>
+<p class="note">判定: <span class="badge">◎ 3回以上を実測</span> 直近投稿で100超が3本以上 ／ <span class="badge gray">○ 直近1〜2本</span> ／ <span class="badge gray">△ 直近は100未満</span>（9月の観測ではバズあり。古い投稿は収集範囲外）／ <span class="badge red">閲覧不可</span> 10/21時点でプロフィールが開けない（削除・改名・非公開のいずれか）。メモは9月調査時のもの。</p>
+<h4>AI活用・AI情報（19件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@furio_gpt" target="_blank" rel="noopener">@furio_gpt</a></b><br><span style="font-size:12px">フリオ|AI1年生のためのコピペで即効仕事術</span></td><td class="n">16,623</td><td class="n">13本</td><td class="n hi">5</td><td class="n">1,423</td><td class="n">8.6%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね558</span><br>AI×プロンプトで独立・企業研修4万人</td></tr><tr><td><b><a href="https://www.threads.com/@naoto__ai" target="_blank" rel="noopener">@naoto__ai</a></b><br><span style="font-size:12px">なおと｜AIの教科書</span></td><td class="n">4,665</td><td class="n">12本</td><td class="n hi">3</td><td class="n">414</td><td class="n">8.9%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね226</span><br>ゼロから学ぶAI活用・元IT経営者(年商5000万)</td></tr><tr><td><b><a href="https://www.threads.com/@shiomaru86" target="_blank" rel="noopener">@shiomaru86</a></b><br><span style="font-size:12px">しおまる　AIでSNS攻略のプロ</span></td><td class="n">7,617</td><td class="n">18本</td><td class="n">2</td><td class="n">372</td><td class="n">4.9%</td><td><span class="badge gray">○ 直近2本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね1190</span><br>AI会社でインスタ4.2万・リサーチ〜集客〜セールス公開</td></tr><tr><td><b><a href="https://www.threads.com/@sugurukun_ai" target="_blank" rel="noopener">@sugurukun_ai</a></b><br><span style="font-size:12px">すぐる@ChatGPTガチ勢</span></td><td class="n">1,114</td><td class="n">13本</td><td class="n">2</td><td class="n">130</td><td class="n">11.7%</td><td><span class="badge gray">○ 直近2本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね570</span><br>AI研修/開発会社CEO・GPTs国内5位</td></tr><tr><td><b><a href="https://www.threads.com/@kemu_ai" target="_blank" rel="noopener">@kemu_ai</a></b><br><span style="font-size:12px">ケム| AI・ChatGPTの本格活用</span></td><td class="n">24,704</td><td class="n">26本</td><td class="n">1</td><td class="n">125</td><td class="n">0.5%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね188</span><br>27歳・Threads最速2万人・AIスクール講師</td></tr><tr><td><b><a href="https://www.threads.com/@hataraku_writer" target="_blank" rel="noopener">@hataraku_writer</a></b><br><span style="font-size:12px">まな|Threads×Alライティング</span></td><td class="n">23,484</td><td class="n">25本</td><td class="n">1</td><td class="n">570</td><td class="n">2.4%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね847</span><br>note×AI総閲覧34万/販売1500部・無料AI講座LINE</td></tr><tr><td><b><a href="https://www.threads.com/@kopen_life_ai" target="_blank" rel="noopener">@kopen_life_ai</a></b><br><span style="font-size:12px">コペン | AIを実装する人</span></td><td class="n">9,788</td><td class="n">28本</td><td class="n">1</td><td class="n">260</td><td class="n">2.7%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね337</span><br>自社事業+業務委託で年収7倍・情報商材やらない宣言・note誘導</td></tr><tr><td><b><a href="https://www.threads.com/@kon_ai01" target="_blank" rel="noopener">@kon_ai01</a></b><br><span style="font-size:12px">こん│AIオタクの秘密基地</span></td><td class="n">9,704</td><td class="n">10本</td><td class="n">1</td><td class="n">201</td><td class="n">2.1%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね1334</span><br>プロンプト/AI活用術・複数バズ確認・無料特典配布</td></tr><tr><td><b><a href="https://www.threads.com/@akanee_ai" target="_blank" rel="noopener">@akanee_ai</a></b><br><span style="font-size:12px">あか姉 | 50代でもできたAIマネタイズ</span></td><td class="n">2,103</td><td class="n">16本</td><td class="n">1</td><td class="n">242</td><td class="n">11.5%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね696</span><br>50代・100均パート×AI×noteで月5万挑戦</td></tr><tr><td><b><a href="https://www.threads.com/@neet_ai_creator" target="_blank" rel="noopener">@neet_ai_creator</a></b><br><span style="font-size:12px">にと｜AIクリエイター</span></td><td class="n">1,721</td><td class="n">12本</td><td class="n">1</td><td class="n">201</td><td class="n">11.7%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね1247</span><br>労働0時間/協業8桁・無料AIスクール</td></tr><tr><td><b><a href="https://www.threads.com/@marikkadayo" target="_blank" rel="noopener">@marikkadayo</a></b><br><span style="font-size:12px">まりっか | 非エンジニアのAI活用法</span></td><td class="n">1,268</td><td class="n">16本</td><td class="n">1</td><td class="n">256</td><td class="n">20.2%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね354</span><br>アプリ開発スタートアップ社長・元LINEヤフー</td></tr><tr><td><b><a href="https://www.threads.com/@ai_lime513" target="_blank" rel="noopener">@ai_lime513</a></b><br><span style="font-size:12px">らいむ @AI活用</span></td><td class="n">307</td><td class="n">19本</td><td class="n">1</td><td class="n">157</td><td class="n">51.1%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね635</span><br>AI画像/Claude小ネタ・小規模だが単発バズ</td></tr><tr><td><b><a href="https://www.threads.com/@suke_ai_.chatgpt" target="_blank" rel="noopener">@suke_ai_.chatgpt</a></b><br><span style="font-size:12px">スケ | “1から学ぶ”ズルいAI活用術</span></td><td class="n">8,109</td><td class="n">15本</td><td class="n">0</td><td class="n">12</td><td class="n">0.1%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね1260</span><br>初心者向けAI活用・Instagram誘導</td></tr><tr><td><b><a href="https://www.threads.com/@satiko_life" target="_blank" rel="noopener">@satiko_life</a></b><br><span style="font-size:12px">さちこ | AIで家族食わせてるママ</span></td><td class="n">2,161</td><td class="n">30本</td><td class="n">0</td><td class="n">56</td><td class="n">2.6%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね182</span><br>新垢初月50万・最高月380万・累計1000部</td></tr><tr><td><b><a href="https://www.threads.com/@nakaaki__100days" target="_blank" rel="noopener">@nakaaki__100days</a></b><br><span style="font-size:12px">なかあき【AIでソロプレナー実験中 】</span></td><td class="n">1,202</td><td class="n">12本</td><td class="n">0</td><td class="n">8</td><td class="n">0.7%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね414</span><br>AIで一人ビジネス検証・Claude中心</td></tr><tr><td><b><a href="https://www.threads.com/@ri.oh0423" target="_blank" rel="noopener">@ri.oh0423</a></b><br><span style="font-size:12px">risaまま</span></td><td class="n">711</td><td class="n">21本</td><td class="n">0</td><td class="n">14</td><td class="n">2.0%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね325</span><br>幼稚園パートママ・Threads/AI・AI社員会社発信</td></tr><tr><td><b><a href="https://www.threads.com/@tubasa_ai" target="_blank" rel="noopener">@tubasa_ai</a></b><br><span style="font-size:12px">tubasa_ai</span></td><td class="n">539</td><td class="n">19本</td><td class="n">0</td><td class="n">40</td><td class="n">7.4%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね110</span><br>AI×note</td></tr><tr><td><b><a href="https://www.threads.com/@so_lazy_labo" target="_blank" rel="noopener">@so_lazy_labo</a></b><br><span style="font-size:12px">ソウ🧪｜ひとり社長の業務効率化ラボ</span></td><td class="n">516</td><td class="n">37本</td><td class="n">0</td><td class="n">52</td><td class="n">10.1%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね983</span><br>非エンジニアのAI自動化記録・質問型でコメント多い</td></tr><tr><td><b><a href="https://www.threads.com/@sagasan11" target="_blank" rel="noopener">@sagasan11</a></b><br><span style="font-size:12px">サガさん</span></td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td><span class="badge red">閲覧不可</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね172</span><br>AIで効率化FIRE・複数垢運用・ツール開発・会社経営</td></tr></table></div>
+<h4>AI×ClaudeCode（8件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@kuroe_claude" target="_blank" rel="noopener">@kuroe_claude</a></b><br><span style="font-size:12px">クロエ｜Claude Codeオタク</span></td><td class="n">9,315</td><td class="n">19本</td><td class="n hi">3</td><td class="n">297</td><td class="n">3.2%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね771</span><br>Claude CodeでAI月70万</td></tr><tr><td><b><a href="https://www.threads.com/@mokumoku416_ai" target="_blank" rel="noopener">@mokumoku416_ai</a></b><br><span style="font-size:12px">ﾄﾓ｜AI×YouTube自動化</span></td><td class="n">464</td><td class="n">29本</td><td class="n hi">3</td><td class="n">513</td><td class="n">110.6%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね511</span><br>YouTube4ch収益化・非エンジニアClaude Code</td></tr><tr><td><b><a href="https://www.threads.com/@shichannosabu2" target="_blank" rel="noopener">@shichannosabu2</a></b><br><span style="font-size:12px">しーちゃんのサブ</span></td><td class="n">401</td><td class="n">27本</td><td class="n hi">3</td><td class="n">183</td><td class="n">45.6%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね165</span><br>AIエンジニア・AI社員大量雇用で総収益8桁(サブ垢)</td></tr><tr><td><b><a href="https://www.threads.com/@yuigs_ai" target="_blank" rel="noopener">@yuigs_ai</a></b><br><span style="font-size:12px">yusuke｜Claude Coder</span></td><td class="n">1,178</td><td class="n">31本</td><td class="n">2</td><td class="n">350</td><td class="n">29.7%</td><td><span class="badge gray">○ 直近2本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね349</span><br>元証券→外資コン・Claude Coder</td></tr><tr><td><b><a href="https://www.threads.com/@osabori_claudecode0" target="_blank" rel="noopener">@osabori_claudecode0</a></b><br><span style="font-size:12px">おサボりくん｜ClaudeCodeで暮らす人</span></td><td class="n">3,095</td><td class="n">11本</td><td class="n">1</td><td class="n">156</td><td class="n">5.0%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね152</span><br>ClaudeCodeでThreads万垢を半自動(自社運用に酷似)</td></tr><tr><td><b><a href="https://www.threads.com/@tokino_ai" target="_blank" rel="noopener">@tokino_ai</a></b><br><span style="font-size:12px">toki.</span></td><td class="n">1,794</td><td class="n">11本</td><td class="n">0</td><td class="n">16</td><td class="n">0.9%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね344</span><br>AI好きで起業・自動化・エンジニア8年</td></tr><tr><td><b><a href="https://www.threads.com/@sumomo_ai_kouritsu" target="_blank" rel="noopener">@sumomo_ai_kouritsu</a></b><br><span style="font-size:12px">すもも⌇AIでヒマを作る人</span></td><td class="n">1,696</td><td class="n">13本</td><td class="n">0</td><td class="n">45</td><td class="n">2.7%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね167</span><br>Claude Codeに仕事を任せる・自動化</td></tr><tr><td><b><a href="https://www.threads.com/@suesan_2030" target="_blank" rel="noopener">@suesan_2030</a></b><br><span style="font-size:12px">Sue</span></td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td><span class="badge red">閲覧不可</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね478</span><br>映像クリエイター・クロードコードでHP制作</td></tr></table></div>
+<h4>AI画像・プロンプト（1件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@aibijo_images_creator" target="_blank" rel="noopener">@aibijo_images_creator</a></b><br><span style="font-size:12px">妄想家@AIクリエーター</span></td><td class="n">130</td><td class="n">9本</td><td class="n hi">4</td><td class="n">8,311</td><td class="n">6393.1%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね5369</span><br>AI画像の生成方法+プロンプト販売・小規模だが大バズ</td></tr></table></div>
+<h4>AI副業・副業ノウハウ（4件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@ojisan_meets_ai" target="_blank" rel="noopener">@ojisan_meets_ai</a></b><br><span style="font-size:12px">アリシマ｜おじさん meets AI</span></td><td class="n">224</td><td class="n">17本</td><td class="n">1</td><td class="n">230</td><td class="n">102.7%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね215</span><br>40代が挑戦するAI副業ログ・共感型</td></tr><tr><td><b><a href="https://www.threads.com/@xr7ujuj" target="_blank" rel="noopener">@xr7ujuj</a></b><br><span style="font-size:12px">みんご</span></td><td class="n">36</td><td class="n">40本</td><td class="n">1</td><td class="n">166</td><td class="n">461.1%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね160</span><br>副業収入系(フォロワー未取得)</td></tr><tr><td><b><a href="https://www.threads.com/@saku21695" target="_blank" rel="noopener">@saku21695</a></b><br><span style="font-size:12px">saku</span></td><td class="n">182</td><td class="n">40本</td><td class="n">0</td><td class="n">2</td><td class="n">1.1%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね111</span><br>副業収入系(フォロワー未取得)</td></tr><tr><td><b><a href="https://www.threads.com/@hata_50fukugyo" target="_blank" rel="noopener">@hata_50fukugyo</a></b><br><span style="font-size:12px">はた｜50代からの副業挑戦</span></td><td class="n">101</td><td class="n">25本</td><td class="n">0</td><td class="n">40</td><td class="n">39.6%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね184</span><br>50代後半・AI/SNS/アフィリを学び実践</td></tr></table></div>
+<h4>note・コンテンツ販売（4件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@rin.noter" target="_blank" rel="noopener">@rin.noter</a></b><br><span style="font-size:12px">りん❤️‍🔥note錬金術師</span></td><td class="n">4,096</td><td class="n">14本</td><td class="n">0</td><td class="n">80</td><td class="n">2.0%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね266</span><br>AI×note・月200万(最高265万)</td></tr><tr><td><b><a href="https://www.threads.com/@k.sot10" target="_blank" rel="noopener">@k.sot10</a></b><br><span style="font-size:12px">解放の戦士｜リハビリ相談室</span></td><td class="n">918</td><td class="n">32本</td><td class="n">0</td><td class="n">11</td><td class="n">1.2%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね650</span><br>作業療法士・note1年運営結果を発信(人物は医療系)</td></tr><tr><td><b><a href="https://www.threads.com/@tet_note" target="_blank" rel="noopener">@tet_note</a></b><br><span style="font-size:12px">テテ| noteの暮らし</span></td><td class="n">896</td><td class="n">38本</td><td class="n">0</td><td class="n">72</td><td class="n">8.0%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね444/コメント151</span><br>note6ヶ月で売上400万・「書いて稼ぐ」発信</td></tr><tr><td><b><a href="https://www.threads.com/@tanaka_yu_05m" target="_blank" rel="noopener">@tanaka_yu_05m</a></b><br><span style="font-size:12px">ユウ｜Threads運用</span></td><td class="n">114</td><td class="n">40本</td><td class="n">0</td><td class="n">7</td><td class="n">6.1%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね204</span><br>Threads複数垢100万インプ・note×Threads売上</td></tr></table></div>
+<h4>ココナラ・スキルシェア（6件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@pomechan43" target="_blank" rel="noopener">@pomechan43</a></b><br><span style="font-size:12px">ぽめちゃん</span></td><td class="n">1,034</td><td class="n">39本</td><td class="n">1</td><td class="n">327</td><td class="n">31.6%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね232</span><br>ココナラ主婦・累計1000万達成</td></tr><tr><td><b><a href="https://www.threads.com/@n_ai.gpt" target="_blank" rel="noopener">@n_ai.gpt</a></b><br><span style="font-size:12px">ココまる｜仕組み化のプロ</span></td><td class="n">3,927</td><td class="n">13本</td><td class="n">0</td><td class="n">9</td><td class="n">0.2%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね151</span><br>ココナラ×ChatGPTで年4千万超・仕組み化公開</td></tr><tr><td><b><a href="https://www.threads.com/@oz_net_biz" target="_blank" rel="noopener">@oz_net_biz</a></b><br><span style="font-size:12px">オズ|AI✖️ココナラハッキング起業家</span></td><td class="n">1,292</td><td class="n">12本</td><td class="n">0</td><td class="n">24</td><td class="n">1.9%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね395</span><br>ココナラ×AI・副業収入2000万超・複数バズ</td></tr><tr><td><b><a href="https://www.threads.com/@claude_mama00" target="_blank" rel="noopener">@claude_mama00</a></b><br><span style="font-size:12px">Claudeママ</span></td><td class="n">1,146</td><td class="n">11本</td><td class="n">0</td><td class="n">21</td><td class="n">1.8%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね505</span><br>Claudeでフリーランス的ノマドワーク・案件発信</td></tr><tr><td><b><a href="https://www.threads.com/@hanahanamama22" target="_blank" rel="noopener">@hanahanamama22</a></b><br><span style="font-size:12px">はなはな</span></td><td class="n">101</td><td class="n">21本</td><td class="n">0</td><td class="n">2</td><td class="n">2.0%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね1324</span><br>ココナラWEBデザイナー継続(bioは暮らし系)</td></tr><tr><td><b><a href="https://www.threads.com/@aya.design___" target="_blank" rel="noopener">@aya.design___</a></b><br><span style="font-size:12px">aya design</span></td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td><span class="badge red">閲覧不可</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね396</span><br>ココナラでデザイン販売開設</td></tr></table></div>
+<h4>Webライター・動画編集（2件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@syuri_fun_life" target="_blank" rel="noopener">@syuri_fun_life</a></b><br><span style="font-size:12px">しゅり｜AM3時半から働く3児ママ</span></td><td class="n">18,455</td><td class="n">39本</td><td class="n">1</td><td class="n">2,173</td><td class="n">11.8%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね1850</span><br>Webライター在宅月60万・スクール不要訴求・note誘導</td></tr><tr><td><b><a href="https://www.threads.com/@lryo1" target="_blank" rel="noopener">@lryo1</a></b><br><span style="font-size:12px">福岡/Photographer /Videographer</span></td><td class="n">1,355</td><td class="n">38本</td><td class="n">1</td><td class="n">726</td><td class="n">53.6%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね728</span><br>生成AIのみで動画制作の作例発信(稼ぐ系は薄め)</td></tr></table></div>
+<h4>物販・せどり・アフィリエイト（5件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@rei_handmade.accessory" target="_blank" rel="noopener">@rei_handmade.accessory</a></b><br><span style="font-size:12px">Rei -沖縄の草花を纏う-</span></td><td class="n">3,796</td><td class="n">27本</td><td class="n hi">5</td><td class="n">379</td><td class="n">10.0%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね207</span><br>ハンドメイドaccessory・online販売</td></tr><tr><td><b><a href="https://www.threads.com/@mamano_yorimichi" target="_blank" rel="noopener">@mamano_yorimichi</a></b><br><span style="font-size:12px">ままのよりみち🕊️🫧</span></td><td class="n">356</td><td class="n">34本</td><td class="n">1</td><td class="n">316</td><td class="n">88.8%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね202/コメント174</span><br>楽天room・歯科衛生士・1投稿でいいね/コメント共に100超</td></tr><tr><td><b><a href="https://www.threads.com/@saorin_buppan" target="_blank" rel="noopener">@saorin_buppan</a></b><br><span style="font-size:12px">さおり/物販の女王</span></td><td class="n">21,441</td><td class="n">14本</td><td class="n">0</td><td class="n">98</td><td class="n">0.5%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね191</span><br>セールス/物販・ヤクルト全国1位実績</td></tr><tr><td><b><a href="https://www.threads.com/@kaba_buppanobachan" target="_blank" rel="noopener">@kaba_buppanobachan</a></b><br><span style="font-size:12px">kaba(かば)|スキルゼロから始めた50代の物販おばちゃん</span></td><td class="n">2,552</td><td class="n">28本</td><td class="n">0</td><td class="n">32</td><td class="n">1.3%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね632</span><br>50代主婦の物販メソッド・パート辞めたい層に刺さる</td></tr><tr><td><b><a href="https://www.threads.com/@kanako_mizuki0" target="_blank" rel="noopener">@kanako_mizuki0</a></b><br><span style="font-size:12px">かなこ</span></td><td class="n">224</td><td class="n">20本</td><td class="n">0</td><td class="n">2</td><td class="n">0.9%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね106</span><br>サラリーマン副業・本音レビュー・楽天アフィリ</td></tr></table></div>
+<h4>SNS運用・集客（8件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@maroko_workstyle" target="_blank" rel="noopener">@maroko_workstyle</a></b><br><span style="font-size:12px">まろ子丨小学生ママの複業在宅ワーク生活</span></td><td class="n">3,225</td><td class="n">39本</td><td class="n hi">18</td><td class="n">1,228</td><td class="n">38.1%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね342</span><br>週4パート+在宅複業40代・実績報告</td></tr><tr><td><b><a href="https://www.threads.com/@nao_bihadasalon" target="_blank" rel="noopener">@nao_bihadasalon</a></b><br><span style="font-size:12px">nao|美肌特化サロン</span></td><td class="n">294</td><td class="n">20本</td><td class="n hi">7</td><td class="n">572</td><td class="n">194.6%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね190</span><br>美肌サロン集客の悩み共感型</td></tr><tr><td><b><a href="https://www.threads.com/@mishima_com" target="_blank" rel="noopener">@mishima_com</a></b><br><span style="font-size:12px">三島優子/生涯かかりつけサロンの先生/    サロン集客</span></td><td class="n">8,848</td><td class="n">37本</td><td class="n hi">3</td><td class="n">161</td><td class="n">1.8%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね394</span><br>セラピスト向けサロン集客・スレッズ必須訴求</td></tr><tr><td><b><a href="https://www.threads.com/@threads_shukyaku" target="_blank" rel="noopener">@threads_shukyaku</a></b><br><span style="font-size:12px">みのり｜スレッズ集客サポーター</span></td><td class="n">8,734</td><td class="n">36本</td><td class="n hi">3</td><td class="n">1,236</td><td class="n">14.2%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね170</span><br>スレッズだけで集客・250名以上サポート</td></tr><tr><td><b><a href="https://www.threads.com/@nail____ai1110" target="_blank" rel="noopener">@nail____ai1110</a></b><br><span style="font-size:12px">𝐴  𝑖┊︎広島┊︎韓国ネイル┊︎多系統ネイリスト</span></td><td class="n">147</td><td class="n">39本</td><td class="n">2</td><td class="n">732</td><td class="n">498.0%</td><td><span class="badge gray">○ 直近2本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね721</span><br>ネイルサロン個人事業主・集客</td></tr><tr><td><b><a href="https://www.threads.com/@kaho_pta_home" target="_blank" rel="noopener">@kaho_pta_home</a></b><br><span style="font-size:12px">かほ｜PTA役員ママの在宅</span></td><td class="n">160</td><td class="n">16本</td><td class="n">1</td><td class="n">308</td><td class="n">192.5%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね293</span><br>在宅ワーク母のリアル月収発表</td></tr><tr><td><b><a href="https://www.threads.com/@asa_to_ame" target="_blank" rel="noopener">@asa_to_ame</a></b><br><span style="font-size:12px">アオト</span></td><td class="n">10,071</td><td class="n">17本</td><td class="n">0</td><td class="n">32</td><td class="n">0.3%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね188</span><br>SNS管理・自動化AIツール開発・Threads運用</td></tr><tr><td><b><a href="https://www.threads.com/@mariko_ai.salon" target="_blank" rel="noopener">@mariko_ai.salon</a></b><br><span style="font-size:12px">きりあん まりこ｜サロン経営x AIの専門家</span></td><td class="n">906</td><td class="n">11本</td><td class="n">0</td><td class="n">14</td><td class="n">1.5%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね784</span><br>サロン経営年商4.5億・世界8店舗・AI集客専門家</td></tr></table></div>
+<h4>投資・マネー（4件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@kabukurashuhu" target="_blank" rel="noopener">@kabukurashuhu</a></b><br><span style="font-size:12px">株クラ主婦</span></td><td class="n">2,770</td><td class="n">37本</td><td class="n">2</td><td class="n">1,535</td><td class="n">55.4%</td><td><span class="badge gray">○ 直近2本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね917</span><br>投資歴15年の主婦・半導体デイトレ&amp;長期</td></tr><tr><td><b><a href="https://www.threads.com/@dps_oyakata" target="_blank" rel="noopener">@dps_oyakata</a></b><br><span style="font-size:12px">どすこい親方</span></td><td class="n">326</td><td class="n">40本</td><td class="n">2</td><td class="n">161</td><td class="n">49.4%</td><td><span class="badge gray">○ 直近2本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね769/コメント103</span><br>投資/FX・スレッズで株を学ぶ層</td></tr><tr><td><b><a href="https://www.threads.com/@chiii_twins_st" target="_blank" rel="noopener">@chiii_twins_st</a></b><br><span style="font-size:12px">ちぃこ｜40代ママの日本株スイング🔰</span></td><td class="n">818</td><td class="n">32本</td><td class="n">1</td><td class="n">148</td><td class="n">18.1%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね1756</span><br>日本株スイング・銘柄推奨/LINE誘導なしの実録型</td></tr><tr><td><b><a href="https://www.threads.com/@riiiiku_25kk" target="_blank" rel="noopener">@riiiiku_25kk</a></b><br><span style="font-size:12px">黒さん</span></td><td class="n">743</td><td class="n">23本</td><td class="n">1</td><td class="n">142</td><td class="n">19.1%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね1587</span><br>株トレード12年・銘柄と売買実録</td></tr></table></div>
+<h4>その他・情報発信（1件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@book_meyer" target="_blank" rel="noopener">@book_meyer</a></b><br><span style="font-size:12px">ぶっくま｜本をつなぐ読書論考家</span></td><td class="n">25,765</td><td class="n">17本</td><td class="n hi">11</td><td class="n">2,615</td><td class="n">10.1%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね2358</span><br>ビジネス書図解・読書術発信(稼ぐ系ノウハウは薄め)</td></tr></table></div>
+<h4>案件・モニター募集（6件）</h4>
+<div class="tw"><table><tr><th>アカウント</th><th>フォロワー</th><th>直近投稿</th><th>100超</th><th>最高いいね</th><th>率</th><th>判定</th><th>メモ</th></tr><tr><td><b><a href="https://www.threads.com/@mao_eye.design" target="_blank" rel="noopener">@mao_eye.design</a></b><br><span style="font-size:12px">MAO｜垢抜け美容記録</span></td><td class="n">92</td><td class="n">25本</td><td class="n hi">5</td><td class="n">1,552</td><td class="n">1687.0%</td><td><span class="badge">◎ 3回以上を実測</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね356</span><br>東京・アートメイク無料モニター募集(看護師デビュー前の症例集め)</td></tr><tr><td><b><a href="https://www.threads.com/@beomglobal_jp" target="_blank" rel="noopener">@beomglobal_jp</a></b><br><span style="font-size:12px">주식회사 범글로벌 | ベオムグローバル</span></td><td class="n">166</td><td class="n">39本</td><td class="n">2</td><td class="n">227</td><td class="n">136.7%</td><td><span class="badge gray">○ 直近2本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね223</span><br>韓国飲食店PR案件をインフルエンサー向けに募集・LINE誘導</td></tr><tr><td><b><a href="https://www.threads.com/@dryheadspa_hope" target="_blank" rel="noopener">@dryheadspa_hope</a></b><br><span style="font-size:12px">睡眠改善/ドライヘッドスパ専門店/HOPE/中崎町</span></td><td class="n">262</td><td class="n">39本</td><td class="n">1</td><td class="n">210</td><td class="n">80.2%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね217/コメント132</span><br>大阪中崎町・ヘッドスパ無料モニター募集(施術提供型)</td></tr><tr><td><b><a href="https://www.threads.com/@chika_artmake_okayama" target="_blank" rel="noopener">@chika_artmake_okayama</a></b><br><span style="font-size:12px">Chika | 眉(3D)・アイライン</span></td><td class="n">137</td><td class="n">37本</td><td class="n">1</td><td class="n">117</td><td class="n">85.4%</td><td><span class="badge gray">○ 直近1本</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね114/コメント77</span><br>岡山/大阪・眉アートメイクの無料モニター募集(看護師)</td></tr><tr><td><b><a href="https://www.threads.com/@sanaelife1975" target="_blank" rel="noopener">@sanaelife1975</a></b><br><span style="font-size:12px">さなえ|60代からのSNS挑戦</span></td><td class="n">726</td><td class="n">39本</td><td class="n">0</td><td class="n">22</td><td class="n">3.0%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね670/コメント82</span><br>60代・動画編集/SNS運用を受託(受注側・実績アピール型)</td></tr><tr><td><b><a href="https://www.threads.com/@pakira_mie_relax" target="_blank" rel="noopener">@pakira_mie_relax</a></b><br><span style="font-size:12px">Relaxation salon Pakira🌿｜手のぬくもりとhappyをあなたに🌈</span></td><td class="n">87</td><td class="n">36本</td><td class="n">0</td><td class="n">59</td><td class="n">67.8%</td><td><span class="badge gray">△ 直近は100未満</span></td><td class="memo"><span style="color:var(--faint)">9月の観測 いいね132</span><br>三重・リラクサロンのモニター/集客</td></tr></table></div>
+
+<h2 class="serif" id="profile"><span class="no">6</span>プロフィール設計（競合の傾向）</h2>
+<p class="note">閲覧できた65件の表示名・bio・リンク欄・固定投稿の集計（10/21）。</p>
+
+<div class="stats">
+  <div class="stat acc"><p class="l">表示名に「｜」で肩書き</p><p class="v">38／65件</p></div>
+  <div class="stat"><p class="l">固定投稿あり</p><p class="v">35／65件</p></div>
+  <div class="stat"><p class="l">リンク先（上位）</p><p class="v" style="font-size:16px">note 10 ／ LINE 7 ／ Notion 5</p></div>
+  <div class="stat"><p class="l">リンク欄なし</p><p class="v">22件</p></div>
+</div>
+
+<h3>表示名の型:「名前｜誰向け・何者」</h3>
+<div class="kws"><span class="kw star">フリオ｜AI1年生のためのコピペで即効仕事術</span><span class="kw star">しゅり｜AM3時半から働く3児ママ</span><span class="kw star">kaba｜スキルゼロ50代の物販おばちゃん</span><span class="kw">まろ子｜小学生ママの複業在宅ワーク生活</span><span class="kw">あか姉｜50代でもできたAIマネタイズ</span><span class="kw">オズ｜AI×ココナラハッキング起業家</span><span class="kw">ﾄﾓ｜AI×YouTube自動化</span></div>
+
+<h3>bioの実例（全文）</h3>
+<p class="note">①実績型・②当事者×実績型・③等身大型の代表を1件ずつ。</p>
+<h4>@furio_gpt（16,623）｜フリオ|AI1年生のためのコピペで即効仕事術</h4>
+<pre><code>元会社員（営業）｜AI×プロンプトで独立3〜6ヶ月で月300万
+企業AI研修 受講者40,000人以上｜AIアプリ量産中
+AI1年生のための即効仕事術を毎日発信</code></pre>
+<h4>@syuri_fun_life（18,455）｜しゅり｜AM3時半から働く3児ママ</h4>
+<pre><code>▷PC素人から2年で月60万Webライターに
+▷独学で在宅ワークを始める方法を
+　超・体育会系に発信中
+　
+高額スクールは、いらん！
+　
+🎙️2026.9〜　Voicyパーソナリティに就任
+👇️Webライターを0から学べる無料note公開中</code></pre>
+<h4>@maroko_workstyle（3,225）｜まろ子丨小学生ママの複業在宅ワーク生活</h4>
+<pre><code>＼ド根性じゃない快適な働き方を模索する40代／
+★週4パート（社保加入）+在宅ワーク🌿
+★40代ママのリアルな働き方や思いを発信中🌝
+　
+すごい人のすごいアカウントではなく
+普通の主婦の普通のアカウント☺️
+　
+正社員→フリーランス→東南アジア駐妻
+→帰国してパート＆在宅ワーク（今ここ✨️）</code></pre>
+
+<h3>傾向</h3>
+<ul class="plain">
+  <li><b>表示名は検索の対象。</b>38件が「名前｜〜」で、｜の後ろに<b>誰向けか（AI1年生・スキルゼロ50代）</b>か<b>何者か（2児ママ・起業家）</b>を置く。ダイエット版の「名前は刺す語で構成」と同じ考え方が通用する</li>
+  <li><b>①の実績系のbioは数字の羅列</b>（月300万・受講者40,000人以上・年商5000万）。④の当事者系は数字より<b>立場と今の状況</b>（週4パート＋在宅ワーク・PTA役員で予定が読めない）</li>
+  <li><b>「売らない宣言」が当事者系の信頼の言葉になっている。</b>「すごい人のすごいアカウントではなく普通の主婦の普通のアカウント」（@maroko_workstyle）、「noteもLINE誘導もなし！」（@kabukurashuhu）、「高額スクールは、いらん！」（@syuri_fun_life）</li>
+  <li><b>リンク先はnoteが最多（10件）</b>、次がLINE（7件）・Notion（5件）。リンク欄なしの22件には、率の高いmaroko_workstyle・kabukurashuhu・kaho_pta_homeが入っている＝導線がなくても伸びている</li>
+</ul>
+
+<h2 class="serif" id="samples"><span class="no">7</span>固定投稿の実例（ツリー全文）</h2>
+<p class="note">ダイエット版のこの章は自アカウントのサンプル投稿だったが、稼ぐ系はペルソナ未決定のため、<b>競合の固定投稿（いいね100超）</b>を同じ形式で載せる。固定投稿があるのは35／65件。自アカウントのサンプルは、3語セットとペルソナが決まってから作る。</p>
+
+<div class="post">
+  <div class="post-h"><span class="n">1</span><span><b>無料配布型（プロンプト集→note）</b></span><span class="r"><a href="https://www.threads.com/@furio_gpt/post/DaNZKLyEUzm" target="_blank" rel="noopener" style="color:inherit">@furio_gpt・いいね1,423（フォロワー16,623／率8.6%）</a></span></div>
+  <div class="post-b">【🎁期間限定で公開🎁】
+
+ようやく準備が整いました！
+成功率95.3%のマネタイズ特化チートプロンプト集『極AI』を0円で公開します！
+
+▼チートプロンプト集の実績の一部
+☑︎ 僕自身年4,000ﾏｿ
+☑︎ 発明後、90日で月300ﾏｿを達成
+☑︎ 累計325名が0→1突破を実現
+
+これを使うだけで、
+「AI在宅フリーランス」として生きていけます。
+
+ぜひ今のうちに受け取ってください。
+
+ただし！！！
+
+受け取るなら必ず成果を出してほしいので
+・最も効果的な活用方法
+・受け取る前のたったひとつの準備
+を受け取り条件として、noteにまとめました。
+
+いいねしてから、コメント欄のnoteをご覧ください🙋‍♂️
+
+=====
+
+↓受け取りはコチラから！
+
+予告なしに受け取りを終了します。
+
+真っ先に受け取ってくれた
+先行者の利益を守るためです、
+ご了承ください。
+
+今このページで、
+noteが見れる今のうちに、
+最後まで読んで受け取ってください。
+↓
+https://note.com/furio_gpt/n/ndeba576ebf3b</div>
+  <div class="post-cap">【期間限定で公開】→配布物の名前と0円→実績の箇条書き→「ただし！！！」で受け取り条件（noteを読む）を付け、「いいねしてから、コメント欄のnoteを」で終わる。区切り線の下で「予告なしに終了」と期限を切る。伸びた通常投稿4本のツリーも、すべてこの配布物に集まる構造。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">2</span><span><b>断言＋無料note型</b></span><span class="r"><a href="https://www.threads.com/@syuri_fun_life/post/DPFv85LCfP0" target="_blank" rel="noopener" style="color:inherit">@syuri_fun_life・いいね2,173（フォロワー18,455／率11.8%）</a></span></div>
+  <div class="post-b">固定費かからずに在宅で仕事をしたい人は、全員「Webライター」やったほうがいいと思う。
+
+クラウドワークスやX、Wantedlyで「ライター 募集」って検索すると案件が見つかります。
+
+・商品を試して感想を書く
+・既存記事をリライトする
+・指定テーマでブログ記事を書く
+
+大体1本3000円〜2万円くらいもらえます。
+
+ChatGPTに頼んで肉付けすれば形になるし、最初の一歩はハードル低め。
+パソコン1台あればできるのが、Webライターの強みです。</div>
+  <div class="post-b sub">【自己返信・2つ目・いいね662】
+「自分にライターなんてできるかな？」と不安に思っていた頃から、どうやってWebライターという仕事にたどり着いたのか。そんな私の体験をnoteにまとめたのでよかったら参考にしてください！（無料記事です）https://note.com/syuri_fun_life/n/nd638f95e421d</div>
+  <div class="post-cap">「全員『Webライター』やったほうがいいと思う」と断言し、案件の探し方・仕事の種類・単価（1本3000円〜2万円）まで本文で出し切る。2つ目のツリーで「どうやってたどり着いたか」の体験談noteへ（無料記事と明記）。<b>本文だけで役に立つ固定</b>で、調査対象の固定投稿で最大のいいね。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">3</span><span><b>オプチャ配信型（ココナラ）</b></span><span class="r"><a href="https://www.threads.com/@pomechan43/post/DXZ8b7Fk19Y" target="_blank" rel="noopener" style="color:inherit">@pomechan43・いいね327（フォロワー1,034／率31.6%）</a></span></div>
+  <div class="post-b">ココナラで毎月50ﾏﾝ安定してる方法、気になる人がめちゃ多かったのでオプチャで配信します✨
+
+具体的には
+
+・実績ゼロなのに３日でお仕事もらった方法
+・毎月50ﾏﾝ安定して達成できてる理由
+・スキルがない人におすすめのココナラジャンル10選
+・初心者でもココナラで月5ﾏﾝいける方法
+
+ココナラで月10ﾏﾝ目指したいって人は絶対受け取って！
+
+需要があったら、私が今までどんなお仕事してきたか、実際に私が今でも実践している方法とかも教えるかも✨
+
+受け取り方法は、、、</div>
+  <div class="post-b sub">【自己返信・2つ目・いいね191】
+①この投稿にいいね &amp; ぽめちゃんをフォロー
+②オプチャに参加
+
+https://magical-binder-226.notion.site/33b2cd906a2780f38961f2c76292cd2b?source=copy_link
+
+流した内容は24時間経ったら消しちゃうと思うので早めに入ってくださいね
+
+私の発信をきっかけにココナラでうまくいく人が増えてくれたら嬉しいな✨</div>
+  <div class="post-cap">「気になる人がめちゃ多かったので」と需要を理由に配信を告知し、配信内容を4行で予告。2つ目に受け取り手順（いいね＆フォロー→オプチャ）とリンク、「24時間経ったら消しちゃう」の期限。bioは「ココナラやってる主婦だよ。累計1,000ﾏﾝ達成」の2行だけで、フォロワー1,034・率31.6%。</div>
+</div>
+
+<div class="post">
+  <div class="post-h"><span class="n">4</span><span><b>自己紹介型（等身大）</b></span><span class="r"><a href="https://www.threads.com/@maroko_workstyle/post/DZ4fxrMmIVw" target="_blank" rel="noopener" style="color:inherit">@maroko_workstyle・いいね519（フォロワー3,225／率16.1%）</a></span></div>
+  <div class="post-b">週4パート（社保加入）＆在宅ワークで働く45歳です。
+
+在宅ワークって何してるの？とご質問いただくので私の場合を。
+
+①校正・校閲
+小説と学習教材（中学社会）を中心に、いろいろやってます。中抜けありつつ計10年くらい。
+
+②バックオフィスサポート
+主に、HP作成サポート、SNS運用サポート。具体的には、画像制作、ライティング、WordPress転記など。1年ちょっと。
+
+上記をやりつつ、週4で経理補助のパート（社保加入）＆子育て（小5娘）してます☺️</div>
+  <div class="post-cap">「在宅ワークって何してるの？とご質問いただくので」と質問を理由に、仕事内容を①②で具体的に（年数・内容）。最後に生活（週4パート・子育て）を添えるだけで、導線もリンクもない。それでも率16.1%。<b>④の当事者系の固定はこの形</b>。</div>
+</div>
+
+
+<h2 class="serif" id="system"><span class="no">8</span>調査方法と次の工程</h2>
+<p class="note">仕組みの説明のみ（接続情報・認証情報は本書に含まない）。</p>
+
+<div class="flow">
+  <div class="step"><p class="fn">一</p><b>検索スイープ</b><p>9/7〜8。Threads検索で約60ワードを回し、いいね又はコメント100超の投稿主を拾う</p></div>
+  <div class="step"><p class="fn">二</p><b>候補の選別</b><p>稼ぐ系のノウハウ発信だけを残す（趣味・育児・ネタ垢・勧誘は除外）。ジャンル大枠12区分</p></div>
+  <div class="step"><p class="fn">三</p><b>直近投稿の再収集</b><p>10/21。全68件の直近投稿（最大40件・ツリー込み）・フォロワー・bio・固定投稿を取得</p></div>
+  <div class="step"><p class="fn">四</p><b>分析</b><p>100超の本数・いいね率・4象限・型・語彙・プロフィールを集計（このページ）</p></div>
+</div>
+
+<div class="grid" style="margin-top:14px">
+  <div class="card"><h4>収集の範囲と限界</h4><p>1アカウント最大40件なので、投稿頻度が高いアカウントほど遡れる期間が短い。9月に見えていた古いバズが範囲外になったアカウントがある（例: @suke_ai_.chatgpt は9月の観測1,260いいね、直近15本の最高は12）。△判定は「伸びていない」ではなく「直近で確認できない」。</p></div>
+  <div class="card"><h4>データの置き場所</h4><p>候補一覧: <code>threads-research/data/watch_candidates_kasegu.csv</code>（＋Googleシート）。直近投稿1,613件の本文・ツリー・いいね: <code>threads-research/data/kasegu_posts_202610.csv</code>。</p></div>
+  <div class="card hot"><h4>次の工程（オーナー判断）</h4><p>①監視アカウントを優先候補8件から絞る ②ポジション（③か④）と3語セット・ペルソナを決める ③ダイエット版と同じ工程（実物トレース→批評→承認）でサンプル投稿を作る。</p></div>
+</div>
+
+<h3>参考元に使うときのルール（ダイエット版と共通）</h3>
+<ol class="rules">
+  <li><b>実物のみ</b> — いいね100以上の実測データを持つ投稿だけを参考元にする。下書きには「参考元: URL（いいね数）」を残す</li>
+  <li><b>構造だけ借りる</b> — 1行目のフック構造・ツリーの分割位置を借り、語句はコピーしない</li>
+  <li><b>ジャンル外のバズは使わない</b> — ミーム・雑談・書評で伸びた投稿は、率が高くても参考元にしない</li>
+  <li><b>数字は実数のみ</b> — 収入・実績の数字は根拠を出せるものだけ。盛った数字・揺れる数字は使わない</li>
+  <li><b>率で判定する</b> — いいね数の大きさではなく、いいね率（いいね÷フォロワー）を主基準にする</li>
+</ol>
+
+<p class="foot">
+本書は運用者向けの内部リサーチ統合ドキュメントの公開版。いいね数・フォロワー数はすべて収集時点（2026-10-21）の表示値。4象限の振り分けと「ジャンル外」の判定は投稿内容を読んだうえでの手作業。引用した投稿全文は型分析のための実例引用であり、各投稿の権利は投稿者に帰属する。2026-10-21 作成。
+</p>
+</main>
+</div>
+
+<script>
+(function(){
+const links=[...document.querySelectorAll('.toc a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+if(!secs.length)return;
+const mark=()=>{let cur=secs[0];
+ for(const s of secs){if(s.getBoundingClientRect().top<=110)cur=s}
+ if(window.scrollY+window.innerHeight>=document.body.scrollHeight-4)cur=secs[secs.length-1];
+ links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur.id));};
+addEventListener('scroll',mark,{passive:true});
+addEventListener('resize',mark,{passive:true});
+mark();
+})();
+</script>
+</body>
+</html>
